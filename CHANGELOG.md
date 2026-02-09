@@ -8,8 +8,16 @@
     - [Added](#added)
     - [Changed](#changed)
     - [Fixed](#fixed)
-  - [[1.0.0] - 2026-02-09](#100---2026-02-09)
+  - [[1.0.4] - 2026-02-09](#104---2026-02-09)
+    - [Fixed](#fixed-2)
+    - [Changed](#changed-2)
+    - [Added](#added-2)
+  - [[1.0.1] - 2026-02-10](#101---2026-02-10)
+    - [Fixed](#fixed-1)
+    - [Changed](#changed-1)
     - [Added](#added-1)
+  - [[1.0.0] - 2026-02-09](#100---2026-02-09)
+    - [Added](#added-3)
     - [Documentation](#documentation)
     - [Testing](#testing)
     - [Build & Packaging](#build--packaging)
@@ -50,6 +58,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Network timeout handling improvements
 - Better error recovery for transient network failures
+
+## [1.0.4] - 2026-02-09
+
+### Fixed
+
+- Fixed GitHub Actions workflow permissions for SBOM commit operations
+- Corrected SBOM and CVE report handling in release job
+- Added proper git credentials persistence in checkout steps
+- Fixed compilation database filtering for cppcheck with FetchContent dependencies
+- Resolved race condition in release job where SBOMs weren't available at execution time
+
+### Changed
+
+- Removed automatic git commit of SBOM files to repository (now only attached to releases)
+- Improved release job workflow to properly wait for all prerequisite jobs (codeql, cppcheck, clang_tidy, cvecheck)
+- Enhanced release asset collection with glob patterns for better flexibility
+- Refactored CHANGELOG extraction for release notes
+
+### Added
+
+- Added `persist-credentials: true` to GitHub Actions checkout step for proper git operations
+- Improved error handling in release asset preparation with fallback mechanisms
+- Added `continue-on-error: true` to release creation for robustness
+- Better logging and diagnostics in GitHub Actions workflow steps
+- Automatic CHANGELOG section extraction for release body
 
 ## [1.0.1] - 2026-02-10
 
