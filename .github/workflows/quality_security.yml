@@ -3,6 +3,7 @@ name: C++ Quality & Security
 on:
   push:
     branches: [main]
+    tags: ["v*"]
   pull_request:
 
 jobs:
@@ -55,18 +56,33 @@ jobs:
           cmake -S . -B build-cppcheck -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           cp build-cppcheck/compile_commands.json .
 
+      - name: Debug - Check compile_commands.json
+        run: |
+          echo "=== compile_commands.json exists ==="
+          ls -lah compile_commands.json
+          echo "=== compile_commands.json content (first 50 lines) ==="
+          head -50 compile_commands.json
+          echo "=== Source files ==="
+          find . -name "*.cpp" -o -name "*.hpp" | grep -v build | head -20
+
       - name: Run Cppcheck
         shell: bash
         run: |
-          set +e
+          echo "=== Starting Cppcheck Analysis ==="
           cppcheck \
             --enable=all \
             --inconclusive \
-            --std=c++20 \
+            --std=c++23 \
             --project=compile_commands.json \
-            --error-exitcode=1 \
-            2> cppcheck-report.txt
-          set -e
+            --error-exitcode=0 \
+            --report-progress \
+            2>&1 | tee cppcheck-report.txt
+
+          echo "=== Cppcheck Analysis Complete ==="
+          echo "=== Report Content ==="
+          cat cppcheck-report.txt
+          echo "=== Report Statistics ==="
+          wc -l cppcheck-report.txt
 
       - name: Upload Cppcheck Report
         uses: actions/upload-artifact@v4
@@ -162,22 +178,122 @@ jobs:
       - name: Install cve-bin-tool
         run: pipx install cve-bin-tool
 
-      - name: CVE Report
+      - name: Debug - Check SBOM file before CVE scan
         run: |
+          echo "=== Checking SBOM file ==="
+          if [ -f "./docs/cyclonedx-${{ steps.version.outputs.version }}.json" ]; then
+            ls -lah "./docs/cyclonedx-${{ steps.version.outputs.version }}.json"
+            echo "=== SBOM file size and content preview ==="
+            wc -c "./docs/cyclonedx-${{ steps.version.outputs.version }}.json"
+            echo "--- First 100 lines ---"
+            head -100 "./docs/cyclonedx-${{ steps.version.outputs.version }}.json"
+          else
+            echo "ERROR: SBOM file not found!"
+            exit 1
+          fi
+
+      - name: CVE Report (CVSS >= 9 - Critical Only)
+        run: |
+          echo "=== Scanning for CRITICAL CVEs (CVSS >= 9) ==="
           cve-bin-tool --sbom cyclonedx --sbom-file ./docs/cyclonedx-${{ steps.version.outputs.version }}.json \
             --format json \
-            --output cve-report-${{ steps.version.outputs.version }}.json \
+            --output cve-report-critical-${{ steps.version.outputs.version }}.json \
             --disable-data-source OSV,EPSS \
             --cvss 9 || true
+
+          echo "=== CRITICAL CVEs Report Generated ==="
+          if [ -f "cve-report-critical-${{ steps.version.outputs.version }}.json" ]; then
+            SIZE=$(wc -c < "cve-report-critical-${{ steps.version.outputs.version }}.json")
+            echo "Report file size: $SIZE bytes"
+            
+            if [ "$SIZE" -gt 10 ]; then
+              echo "⚠️  CRITICAL CVEs FOUND!"
+              cat "cve-report-critical-${{ steps.version.outputs.version }}.json"
+            else
+              echo "✅ No critical CVEs found (CVSS >= 9)"
+            fi
+          fi
+
+      - name: CVE Report (All Vulnerabilities - Informational)
+        run: |
+          echo "=== Scanning for ALL CVEs ==="
+          cve-bin-tool --sbom cyclonedx --sbom-file ./docs/cyclonedx-${{ steps.version.outputs.version }}.json \
+            --format json \
+            --output cve-report-all-${{ steps.version.outputs.version }}.json \
+            --disable-data-source OSV,EPSS \
+            --cvss 0 || true
+
+          echo "=== ALL CVEs Report Generated ==="
+          if [ -f "cve-report-all-${{ steps.version.outputs.version }}.json" ]; then
+            SIZE=$(wc -c < "cve-report-all-${{ steps.version.outputs.version }}.json")
+            echo "Report file size: $SIZE bytes"
+            
+            if [ "$SIZE" -gt 10 ]; then
+              echo "📊 Summary of all vulnerabilities:"
+              # Extract CVE count if possible
+              grep -o '"vulnerability"' "cve-report-all-${{ steps.version.outputs.version }}.json" | wc -l || echo "Unable to count CVEs"
+            else
+              echo "✅ No vulnerabilities found at any level"
+            fi
+          fi
+
+      - name: Create CVE Summary Report
+        run: |
+          echo "=== CVE SCAN SUMMARY ===" > cve-summary.txt
+          echo "" >> cve-summary.txt
+          echo "Scan Date: $(date)" >> cve-summary.txt
+          echo "SBOM File: ./docs/cyclonedx-${{ steps.version.outputs.version }}.json" >> cve-summary.txt
+          echo "" >> cve-summary.txt
+
+          echo "CRITICAL VULNERABILITIES (CVSS >= 9):" >> cve-summary.txt
+          if [ -f "cve-report-critical-${{ steps.version.outputs.version }}.json" ]; then
+            SIZE=$(wc -c < "cve-report-critical-${{ steps.version.outputs.version }}.json")
+            if [ "$SIZE" -gt 10 ]; then
+              echo "⚠️  Found - see cve-report-critical-${{ steps.version.outputs.version }}.json" >> cve-summary.txt
+            else
+              echo "✅ None found" >> cve-summary.txt
+            fi
+          fi
+
+          echo "" >> cve-summary.txt
+          echo "ALL VULNERABILITIES (CVSS >= 0):" >> cve-summary.txt
+          if [ -f "cve-report-all-${{ steps.version.outputs.version }}.json" ]; then
+            SIZE=$(wc -c < "cve-report-all-${{ steps.version.outputs.version }}.json")
+            if [ "$SIZE" -gt 10 ]; then
+              echo "Found - see cve-report-all-${{ steps.version.outputs.version }}.json" >> cve-summary.txt
+            else
+              echo "✅ None found" >> cve-summary.txt
+            fi
+          fi
+
+          cat cve-summary.txt
 
       - name: Upload CVE Report and SBOM artifacts
         uses: actions/upload-artifact@v4
         with:
           name: cve-report
           path: |
-            ./cve-report-${{ steps.version.outputs.version }}.json
+            ./cve-report-critical-${{ steps.version.outputs.version }}.json
+            ./cve-report-all-${{ steps.version.outputs.version }}.json
+            ./cve-summary.txt
             ./docs/cyclonedx-${{ steps.version.outputs.version }}.json
             ./docs/spdx-${{ steps.version.outputs.version }}.spdx
+
+      - name: Commit SBOM files to repository
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          # Check if docs directory exists and files were generated
+          if [ -d docs ] && [ -f "docs/spdx-${{ steps.version.outputs.version }}.spdx" ] && [ -f "docs/cyclonedx-${{ steps.version.outputs.version }}.json" ]; then
+            git add docs/spdx-${{ steps.version.outputs.version }}.spdx
+            git add docs/cyclonedx-${{ steps.version.outputs.version }}.json
+            git commit -m "chore: update SBOM artifacts for version ${{ steps.version.outputs.version }}" || echo "No changes to commit"
+            git push
+          else
+            echo "SBOM files not found in docs directory"
+          fi
 
   clang_tidy:
     name: Clang-Tidy Linting
@@ -201,14 +317,127 @@ jobs:
             -DCMAKE_CXX_STANDARD=23
           cp build-clangtidy/compile_commands.json .
 
-      - name: Run Clang-Tidy
+      - name: Debug - Check compile_commands.json
         run: |
-          jq -r '.[].file' build-clangtidy/compile_commands.json | sort -u | \
-          xargs clang-tidy -p build-clangtidy -quiet \
-          > clang-tidy-report.txt || true
+          echo "=== compile_commands.json exists ==="
+          ls -lah compile_commands.json || echo "File not found!"
+          echo "=== compile_commands.json content (first 30 lines) ==="
+          head -30 compile_commands.json
+          echo "=== Files to analyze ==="
+          jq -r '.[].file' compile_commands.json 2>/dev/null | head -10
+
+      - name: Run Clang-Tidy
+        shell: bash
+        run: |
+          echo "=== Starting Clang-Tidy Analysis ==="
+
+          # Get list of source files from compile_commands.json
+          FILES=$(jq -r '.[].file' build-clangtidy/compile_commands.json 2>/dev/null | sort -u)
+
+          if [ -z "$FILES" ]; then
+            echo "ERROR: No files found in compile_commands.json"
+            exit 1
+          fi
+
+          echo "Files to analyze:"
+          echo "$FILES"
+
+          # Run clang-tidy on each file
+          echo "$FILES" | xargs clang-tidy -p build-clangtidy --quiet 2>&1 | tee clang-tidy-report.txt || true
+
+          echo "=== Clang-Tidy Analysis Complete ==="
+          echo "=== Report Statistics ==="
+          LINES=$(wc -l < clang-tidy-report.txt)
+          echo "Total lines in report: $LINES"
+
+          if [ "$LINES" -eq 0 ]; then
+            echo "No issues found (or report is empty)"
+          else
+            echo "=== Issues Found ==="
+            head -20 clang-tidy-report.txt
+          fi
 
       - name: Upload Clang-Tidy Report
         uses: actions/upload-artifact@v4
         with:
           name: clang-tidy-report
           path: clang-tidy-report.txt
+
+  release:
+    name: Create Release with SBOM & Changelog
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [codeql, cppcheck, clang_tidy]
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Check SBOM files exist
+        run: |
+          echo "Checking for SBOM files..."
+          ls -lah docs/spdx-${{ steps.version.outputs.version }}.spdx || echo "SPDX SBOM not found"
+          ls -lah docs/cyclonedx-${{ steps.version.outputs.version }}.json || echo "CycloneDX SBOM not found"
+
+      - name: Prepare release assets
+        run: |
+          mkdir -p release-assets
+
+          # Copy SBOM files if they exist
+          if [ -f "docs/spdx-${{ steps.version.outputs.version }}.spdx" ]; then
+            cp docs/spdx-${{ steps.version.outputs.version }}.spdx release-assets/
+            echo "✓ Copied SPDX SBOM"
+          fi
+
+          if [ -f "docs/cyclonedx-${{ steps.version.outputs.version }}.json" ]; then
+            cp docs/cyclonedx-${{ steps.version.outputs.version }}.json release-assets/
+            echo "✓ Copied CycloneDX SBOM"
+          fi
+
+          # Copy CVE Reports
+          if [ -f "cve-report-critical-${{ steps.version.outputs.version }}.json" ]; then
+            cp cve-report-critical-${{ steps.version.outputs.version }}.json release-assets/
+            echo "✓ Copied CVE Report (Critical)"
+          fi
+
+          if [ -f "cve-report-all-${{ steps.version.outputs.version }}.json" ]; then
+            cp cve-report-all-${{ steps.version.outputs.version }}.json release-assets/
+            echo "✓ Copied CVE Report (All)"
+          fi
+
+          if [ -f "cve-summary.txt" ]; then
+            cp cve-summary.txt release-assets/
+            echo "✓ Copied CVE Summary"
+          fi
+
+          if [ -z "$VERSION_SECTION" ]; then
+            VERSION_SECTION=$(sed -n "/## \[${{ steps.version.outputs.version }}\]/,\$p" CHANGELOG.md)
+          fi
+
+          # Save to file for use in release
+          echo "$VERSION_SECTION" > release_notes.txt
+          echo "Release notes extracted from CHANGELOG.md"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: "Release v${{ steps.version.outputs.version }}"
+          body_path: release_notes.txt
+          draft: false
+          prerelease: false
+          files: |
+            release-assets/CHANGELOG.md
+            release-assets/spdx-${{ steps.version.outputs.version }}.spdx
+            release-assets/cyclonedx-${{ steps.version.outputs.version }}.json
+            release-assets/cve-report-critical-${{ steps.version.outputs.version }}.json
+            release-assets/cve-report-all-${{ steps.version.outputs.version }}.json
+            release-assets/cve-summary.txt
