@@ -8,6 +8,10 @@
     - [Added](#added)
     - [Changed](#changed)
     - [Fixed](#fixed)
+  - [[1.0.5] - 2026-02-09](#105---2026-02-09)
+    - [Fixed](#fixed-3)
+    - [Changed](#changed-3)
+    - [Added](#added-3)
   - [[1.0.4] - 2026-02-09](#104---2026-02-09)
     - [Fixed](#fixed-2)
     - [Changed](#changed-2)
@@ -83,6 +87,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `continue-on-error: true` to release creation for robustness
 - Better logging and diagnostics in GitHub Actions workflow steps
 - Automatic CHANGELOG section extraction for release body
+
+## [1.0.5] - 2026-02-09
+
+### Fixed
+
+- Incorporated workflow fixes contributed by claude.ai: ensured SBOM and CVE artifacts are generated before the release job runs
+- Fixed edge cases where release assets were created empty when jobs executed in parallel
+
+### Changed
+
+- Improved orchestration between CI jobs: `release` now depends on `cvecheck` and other QA jobs
+- Release artifacts are collected from generated outputs and not committed to the repository
+
+### Added
+
+- Credit note: integrated fixes from collaborator tooling (claude.ai) for CI reliability
 
 ## [1.0.1] - 2026-02-10
 
