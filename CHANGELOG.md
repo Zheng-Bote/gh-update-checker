@@ -1,3 +1,27 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**
+
+- [Changelog](#changelog)
+  - [[Unreleased]](#unreleased)
+    - [Added](#added)
+    - [Changed](#changed)
+    - [Fixed](#fixed)
+  - [[1.0.0] - 2026-02-09](#100---2026-02-09)
+    - [Added](#added-1)
+    - [Documentation](#documentation)
+    - [Testing](#testing)
+    - [Build & Packaging](#build--packaging)
+    - [Known Limitations](#known-limitations)
+    - [Dependencies](#dependencies)
+    - [Contributors](#contributors)
+  - [Versioning Strategy](#versioning-strategy)
+  - [Release Process](#release-process)
+  - [Links](#links)
+    - [Format Guide](#format-guide)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
