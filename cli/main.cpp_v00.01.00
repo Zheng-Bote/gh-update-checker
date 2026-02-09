@@ -1,0 +1,12 @@
+#include "gh_update_checker.hpp"
+#include <iostream>
+
+int main() {
+    auto info = ghupdate::check_github_update(
+        "https://api.github.com/repos/nlohmann/json/releases/latest",
+        "3.11.2"
+    );
+
+    std::cout << "Latest: " << info.latestVersion << "\n";
+    std::cout << "Update available: " << std::boolalpha << info.hasUpdate << "\n";
+}
