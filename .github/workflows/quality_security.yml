@@ -273,14 +273,14 @@ jobs:
           reuse spdx -o "./sbom-output/spdx-${version}.spdx" || {
             echo "⚠️  SPDX generation failed (this may be OK if REUSE is not configured)"
             # Create minimal SPDX file as fallback
-            cat > "./sbom-output/spdx-${version}.spdx" << EOF
-SPDXVersion: SPDX-2.3
-DataLicense: CC0-1.0
-SPDXID: SPDXRef-DOCUMENT
-DocumentName: Project SBOM
-DocumentNamespace: https://example.org/sbom-${version}
-Creator: Tool: reuse
-EOF
+            {
+              echo "SPDXVersion: SPDX-2.3"
+              echo "DataLicense: CC0-1.0"
+              echo "SPDXID: SPDXRef-DOCUMENT"
+              echo "DocumentName: Project SBOM"
+              echo "DocumentNamespace: https://example.org/sbom-${version}"
+              echo "Creator: Tool reuse"
+            } > "./sbom-output/spdx-${version}.spdx"
           }
 
           if [ -f "./sbom-output/spdx-${version}.spdx" ]; then
@@ -295,22 +295,21 @@ EOF
 
           cdxgen -t cpp -o "./sbom-output/cyclonedx-${version}.json" build/ || {
             echo "⚠️  CycloneDX generation failed, creating minimal SBOM"
-            cat > "./sbom-output/cyclonedx-${version}.json" << EOF
-{
-  "bomFormat": "CycloneDX",
-  "specVersion": "1.6",
-  "version": 1,
-  "metadata": {
-    "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-    "component": {
-      "type": "application",
-      "name": "project",
-      "version": "${version}"
-    }
-  },
-  "components": []
-}
-EOF
+            timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+            printf '{\n' > "./sbom-output/cyclonedx-${version}.json"
+            printf '  "bomFormat": "CycloneDX",\n' >> "./sbom-output/cyclonedx-${version}.json"
+            printf '  "specVersion": "1.6",\n' >> "./sbom-output/cyclonedx-${version}.json"
+            printf '  "version": 1,\n' >> "./sbom-output/cyclonedx-${version}.json"
+            printf '  "metadata": {\n' >> "./sbom-output/cyclonedx-${version}.json"
+            printf '    "timestamp": "%s",\n' "$timestamp" >> "./sbom-output/cyclonedx-${version}.json"
+            printf '    "component": {\n' >> "./sbom-output/cyclonedx-${version}.json"
+            printf '      "type": "application",\n' >> "./sbom-output/cyclonedx-${version}.json"
+            printf '      "name": "project",\n' >> "./sbom-output/cyclonedx-${version}.json"
+            printf '      "version": "%s"\n' "$version" >> "./sbom-output/cyclonedx-${version}.json"
+            printf '    }\n' >> "./sbom-output/cyclonedx-${version}.json"
+            printf '  },\n' >> "./sbom-output/cyclonedx-${version}.json"
+            printf '  "components": []\n' >> "./sbom-output/cyclonedx-${version}.json"
+            printf '}\n' >> "./sbom-output/cyclonedx-${version}.json"
           }
 
           if [ -f "./sbom-output/cyclonedx-${version}.json" ]; then
