@@ -356,6 +356,7 @@ jobs:
           fi
 
           cat cve-summary.txt
+          mv cve-summary.txt cve-summary-${{ steps.version.outputs.version }}.txt
 
       - name: Upload CVE Report and SBOM artifacts
         uses: actions/upload-artifact@v4
@@ -364,7 +365,7 @@ jobs:
           path: |
             ./cve-report-critical-${{ steps.version.outputs.version }}.json
             ./cve-report-all-${{ steps.version.outputs.version }}.json
-            ./cve-summary.txt
+            ./cve-summary-${{ steps.version.outputs.version }}.txt
             ./docs/cyclonedx-${{ steps.version.outputs.version }}.json
             ./docs/spdx-${{ steps.version.outputs.version }}.spdx
 
@@ -511,9 +512,15 @@ jobs:
             echo "✓ Copied CVE Report (All)"
           fi
 
-          if [ -f "cve-summary.txt" ]; then
-            cp cve-summary.txt release-assets/
+          if [ -f "cve-summary-${{ steps.version.outputs.version }}.txt" ]; then
+            cp cve-summary-${{ steps.version.outputs.version }}.txt release-assets/
             echo "✓ Copied CVE Summary"
+          fi
+
+          # Copy CHANGELOG for release (if present)
+          if [ -f "CHANGELOG.md" ]; then
+            cp CHANGELOG.md release-assets/ || echo "Failed to copy CHANGELOG.md"
+            echo "✓ Copied CHANGELOG.md"
           fi
 
           if [ -z "$VERSION_SECTION" ]; then
@@ -538,4 +545,4 @@ jobs:
             release-assets/cyclonedx-${{ steps.version.outputs.version }}.json
             release-assets/cve-report-critical-${{ steps.version.outputs.version }}.json
             release-assets/cve-report-all-${{ steps.version.outputs.version }}.json
-            release-assets/cve-summary.txt
+            release-assets/cve-summary-${{ steps.version.outputs.version }}.txt
