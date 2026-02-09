@@ -599,6 +599,30 @@ For issues, questions, or suggestions:
 
 See [CHANGELOG.md](CHANGELOG.md) for version history.
 
+# Contributing
+
+Contributions are welcome! Please fork the repository and create a pull request.
+
+1. Fork the Project
+2. Create your Feature Branch (git checkout -b feature/AmazingFeature)
+3. Commit your Changes (git commit -m 'Add some AmazingFeature')
+4. Push to the Branch (git push origin feature/AmazingFeature)
+5. Open a Pull Request
+
+# License
+
+Distributed under the MIT License. See LICENSE for more information.
+
+Copyright (c) 2026 ZHENG Robert
+
+# Author
+
+[![Zheng Robert - Core Development](https://img.shields.io/badge/Github-Zheng_Robert-black?logo=github)](https://www.github.com/Zheng-Bote)
+
+## Code Contributors
+
+![Contributors](https://img.shields.io/github/contributors/Zheng-Bote/gh-update-checker?color=dark-green)
+
 ---
 
-**Happy checking! 🚀**
+**Happy checking! 🚀** :vulcan_salute:
