@@ -137,9 +137,13 @@ jobs:
   cvecheck:
     name: Generate CVE-Report
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Determine version
         id: version
@@ -366,18 +370,27 @@ jobs:
 
       - name: Commit SBOM files to repository
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
           # Check if docs directory exists and files were generated
-          if [ -d docs ] && [ -f "docs/spdx-${{ steps.version.outputs.version }}.spdx" ] && [ -f "docs/cyclonedx-${{ steps.version.outputs.version }}.json" ]; then
-            git add docs/spdx-${{ steps.version.outputs.version }}.spdx
-            git add docs/cyclonedx-${{ steps.version.outputs.version }}.json
-            git commit -m "chore: update SBOM artifacts for version ${{ steps.version.outputs.version }}" || echo "No changes to commit"
-            git push
+          version="${{ steps.version.outputs.version }}"
+          spdx="docs/spdx-${version}.spdx"
+          cdx="docs/cyclonedx-${version}.json"
+
+          if [ -d docs ] && [ -f "$spdx" ] && [ -f "$cdx" ]; then
+            git add "$spdx"
+            git add "$cdx"
+            git commit -m "chore: update SBOM artifacts for version ${version}" || echo "No changes to commit"
+            # Use token-based push to avoid permission issues
+            remote_url="https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
+            git push "$remote_url" HEAD:main
           else
-            echo "SBOM files not found in docs directory"
+            echo "SBOM files not found in docs directory:"
+            ls -la docs || true
           fi
 
   clang_tidy:
