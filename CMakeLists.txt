@@ -6,7 +6,9 @@ cmake_minimum_required(VERSION 3.23)
 
 # gh-update-checker https://api.github.com/repos/nlohmann/json/releases/latest 3.11.2
 
-project(gh_update_checker LANGUAGES CXX)
+project(gh_update_checker
+        VERSION 1.0.1 
+        LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

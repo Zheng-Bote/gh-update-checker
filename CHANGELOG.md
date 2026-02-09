@@ -1,5 +1,6 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 **Table of Contents**
 
 - [Changelog](#changelog)
@@ -49,6 +50,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Network timeout handling improvements
 - Better error recovery for transient network failures
+
+## [1.0.1] - 2026-02-10
+
+### Fixed
+
+- Fixed empty CVE reports in GitHub Actions workflow
+- Corrected SBOM file path handling in release job
+- Resolved cppcheck report generation issues with proper output stream redirection
+- Fixed clang-tidy file discovery when compile_commands.json is empty
+- Improved error handling for invalid GitHub API responses with timeout considerations
+
+### Changed
+
+- Enhanced CVE scanning with dual-level reporting (Critical + All vulnerabilities)
+- Improved debug output in GitHub Actions workflow for better troubleshooting
+- Refined SBOM artifact handling and validation in release pipeline
+
+### Added
+
+- CVE summary text report (`cve-summary.txt`) for human-readable vulnerability status
+- Diagnostic output for all security scanning tools with timestamps
+- Automatic SBOM file validation before CVE scanning
+- Separate critical (CVSS ≥ 9) and comprehensive (CVSS ≥ 0) CVE reports
 
 ## [1.0.0] - 2026-02-09
 
@@ -206,6 +230,6 @@ Categories to use (in order):
 
 ---
 
-**Last Updated**: 2026-02-09
-**Current Stable Version**: [1.0.0]
+**Last Updated**: 2026-02-10
+**Current Stable Version**: [1.0.1]
 **Development Version**: [Unreleased]
