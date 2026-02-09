@@ -6,6 +6,18 @@ A modern C++23 library and CLI tool to check for the latest releases of GitHub r
 [![C++23](https://img.shields.io/badge/C%2B%2B-23-blue.svg)]()
 [![CMake](https://img.shields.io/badge/CMake-3.23+-blue.svg)]()
 
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/Zheng-Bote/gh-update-checker?logo=GitHub)](https://github.com/Zheng-Bote/gh-update-checker/releases)
+
+[Report Issue](https://github.com/Zheng-Bote/gh-update-checker/issues) · [Request Feature](https://github.com/Zheng-Bote/gh-update-checker/pulls)
+
+---
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+---
+
 ## Overview
 
 **gh-update-checker** provides an efficient way to check if a newer version of a GitHub repository release is available. It automatically handles:
@@ -87,7 +99,7 @@ choco install cmake visualstudio2022community
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/gh-update-checker.git
+git clone https://github.com/Zheng-Bote/gh-update-checker.git
 cd gh-update-checker
 
 # Create build directory
@@ -121,8 +133,8 @@ include(FetchContent)
 
 FetchContent_Declare(
     gh_update_checker
-    GIT_REPOSITORY https://github.com/yourusername/gh-update-checker.git
-    GIT_TAG main
+    GIT_REPOSITORY https://github.com/Zheng-Bote/gh-update-checker.git
+    GIT_TAG v1.0.0
 )
 FetchContent_MakeAvailable(gh_update_checker)
 
@@ -281,7 +293,8 @@ find_package(gh_update_checker REQUIRED)
 include(FetchContent)
 FetchContent_Declare(
     gh_update_checker
-    GIT_REPOSITORY https://github.com/yourusername/gh-update-checker.git
+    GIT_REPOSITORY https://github.com/Zheng-Bote/gh-update-checker.git
+    GIT_TAG v1.0.0
 )
 FetchContent_MakeAvailable(gh_update_checker)
 
@@ -456,7 +469,8 @@ macOS:  brew install cmake
 
 Ensure your compiler is updated:
 
-- GCC: 13.2 or later
+- GCC: 14 or later
+- G++: 14 or later
 - Clang: 17 or later
 
 #### libcurl or nlohmann/json not found
