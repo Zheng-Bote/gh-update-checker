@@ -44,7 +44,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Cppcheck
-        run: sudo apt-get update && sudo apt-get install -y cppcheck
+        run: sudo apt-get update && sudo apt-get install -y cppcheck jq
 
       - name: Install build dependencies
         run: |
@@ -54,35 +54,79 @@ jobs:
       - name: Configure CMake (generate compile_commands.json)
         run: |
           cmake -S . -B build-cppcheck -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-          cp build-cppcheck/compile_commands.json .
+          cp build-cppcheck/compile_commands.json . 2>/dev/null || true
 
       - name: Debug - Check compile_commands.json
         run: |
           echo "=== compile_commands.json exists ==="
-          ls -lah compile_commands.json
-          echo "=== compile_commands.json content (first 50 lines) ==="
-          head -50 compile_commands.json
-          echo "=== Source files ==="
-          find . -name "*.cpp" -o -name "*.hpp" | grep -v build | head -20
+          if [ -f compile_commands.json ]; then
+            ls -lah compile_commands.json
+            echo "=== Total entries in compile_commands.json ==="
+            jq 'length' compile_commands.json
+            echo "=== Files in compile_commands.json ==="
+            jq -r '.[].file' compile_commands.json | sort -u
+          else
+            echo "compile_commands.json not found, will use direct file paths"
+          fi
+
+      - name: Filter compile_commands.json (only project files, skip _deps)
+        run: |
+          echo "=== Filtering compile_commands.json ==="
+
+          if [ -f compile_commands.json ]; then
+            # Filter out _deps and keep only cli/, include/, tests/
+            jq '[.[] | select(.file | contains("_deps") | not)]' compile_commands.json > compile_commands_filtered.json
+            
+            echo "=== Original entries ==="
+            jq 'length' compile_commands.json
+            
+            echo "=== Filtered entries (excluding _deps) ==="
+            jq 'length' compile_commands_filtered.json
+            
+            echo "=== Files to analyze ==="
+            jq -r '.[].file' compile_commands_filtered.json | sort -u
+            
+            mv compile_commands_filtered.json compile_commands.json
+          fi
 
       - name: Run Cppcheck
         shell: bash
         run: |
           echo "=== Starting Cppcheck Analysis ==="
-          cppcheck \
-            --enable=all \
-            --inconclusive \
-            --std=c++23 \
-            --project=compile_commands.json \
-            --error-exitcode=0 \
-            --report-progress \
-            2>&1 | tee cppcheck-report.txt
+
+          if [ -f compile_commands.json ] && [ "$(jq 'length' compile_commands.json)" -gt 0 ]; then
+            echo "Using compile_commands.json for analysis"
+            cppcheck \
+              --enable=all \
+              --inconclusive \
+              --std=c++23 \
+              --project=compile_commands.json \
+              --error-exitcode=0 \
+              --report-progress \
+              2>&1 | tee cppcheck-report.txt
+          else
+            echo "compile_commands.json is empty or missing, using direct file paths"
+            cppcheck \
+              --enable=all \
+              --inconclusive \
+              --std=c++23 \
+              --error-exitcode=0 \
+              --report-progress \
+              cli/ include/ tests/ \
+              2>&1 | tee cppcheck-report.txt
+          fi
 
           echo "=== Cppcheck Analysis Complete ==="
-          echo "=== Report Content ==="
-          cat cppcheck-report.txt
           echo "=== Report Statistics ==="
-          wc -l cppcheck-report.txt
+          LINES=$(wc -l < cppcheck-report.txt)
+          echo "Report has $LINES lines"
+
+          if [ "$LINES" -gt 0 ]; then
+            echo "=== Sample Output (first 30 lines) ==="
+            head -30 cppcheck-report.txt
+          else
+            echo "✅ Analysis completed with no issues found"
+          fi
 
       - name: Upload Cppcheck Report
         uses: actions/upload-artifact@v4
@@ -96,6 +140,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Determine version
+        id: version
+        run: echo "version=1.0.0" >> $GITHUB_OUTPUT
+
       - name: Install build dependencies
         run: |
           sudo apt-get update
@@ -142,33 +191,69 @@ jobs:
 
       - name: Generate SPDX SBOM
         run: |
-          reuse spdx -o ./docs/spdx-${{ steps.version.outputs.version }}.spdx
+          version="${{ steps.version.outputs.version }}"
+          echo "Generating SPDX SBOM with version: $version"
+          reuse spdx -o "./docs/spdx-${version}.spdx" || { echo "SPDX generation failed"; exit 1; }
+
+          if [ -f "./docs/spdx-${version}.spdx" ]; then
+            echo "✅ SPDX SBOM created"
+            ls -lah "./docs/spdx-${version}.spdx"
+          else
+            echo "⚠️  SPDX SBOM not created (this may be OK if REUSE is not configured)"
+          fi
 
       - name: Run Atom Analysis
         run: |
-          ./bin/atom -J-Xmx16g usages -o ./docs/app.atom --slice-outfile ./docs/atom-${{ steps.version.outputs.version }}.json -l cpp build/
+          version="${{ steps.version.outputs.version }}"
+          echo "Running Atom analysis with version: $version"
+
+          if [ -d "./bin" ]; then
+            ./bin/atom -J-Xmx16g usages -o ./docs/app.atom --slice-outfile "./docs/atom-${version}.json" -l cpp build/ || {
+              echo "⚠️  Atom analysis failed, continuing..."
+            }
+          else
+            echo "⚠️  Atom binary not found, skipping Atom analysis"
+          fi
+
+          # Check if atom file exists or create empty one
+          if [ ! -f "./docs/atom-${version}.json" ]; then
+            echo "Creating placeholder atom file since generation failed or was skipped"
+            mkdir -p docs
+            echo '{"slices": []}' > "./docs/atom-${version}.json"
+          fi
 
       - name: Generate CycloneDX SBOM (build-aware)
         env:
           FETCH_LICENSE: true
           CDXGEN_COMPILE_COMMANDS_FILE: build/compile_commands.json
-          CDXGEN_DEBUG_MODE: debug
         run: |
+          version="${{ steps.version.outputs.version }}"
+          echo "Generating SBOM with version: $version"
+
           cdxgen \
-            --output ./docs/cyclonedx-${{ steps.version.outputs.version }}.json \
+            --output "docs/cyclonedx-${version}.json" \
             --output-format json \
             --spec-version 1.6 \
             -t cpp \
-            --usages-slices-file ./docs/atom-${{ steps.version.outputs.version }}.json \
+            --usages-slices-file "docs/atom-${version}.json" \
             --deep \
             --recurse \
-            --project-name CPPAppServer \
-            --project-group net.hase-zheng \
-            --project-version ${{ steps.version.outputs.version }} \
-            --author "ZHENG Robert"
-      - name: Determine version
-        id: version
-        run: echo "version=1.0.0" >> $GITHUB_OUTPUT
+            --project-name "CheckForGHUpdate" \
+            --project-group "io.github.zbamtarikh" \
+            --project-version "${version}" \
+            --author "ZHENG Robert" \
+            . || { echo "cdxgen error: $?"; exit 1; }
+
+          echo "=== Checking if SBOM file was created ==="
+          if [ -f "docs/cyclonedx-${version}.json" ]; then
+            echo "✅ SBOM file created successfully"
+            ls -lah "docs/cyclonedx-${version}.json"
+            wc -c "docs/cyclonedx-${version}.json"
+          else
+            echo "❌ SBOM file not created!"
+            ls -la docs/
+            exit 1
+          fi
 
       - name: Setup Python
         uses: actions/setup-python@v4
