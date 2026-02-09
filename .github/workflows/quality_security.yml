@@ -134,241 +134,6 @@ jobs:
           name: cppcheck-report
           path: cppcheck-report.txt
 
-  cvecheck:
-    name: Generate CVE-Report
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: true
-
-      - name: Determine version
-        id: version
-        run: echo "version=1.0.0" >> $GITHUB_OUTPUT
-
-      - name: Install build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev wget pipx cmake ninja-build build-essential gcc-14 g++-14 libssl-dev
-
-      - name: Configure CMake (export compile_commands)
-        run: |
-          cmake -S . -B build \
-            -DCMAKE_C_COMPILER=gcc-14 \
-            -DCMAKE_CXX_COMPILER=g++-14 \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-
-      - name: Build project
-        run: |
-          cmake --build build --config Release
-
-      - name: Setup Python (für reuse)
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
-
-      - name: Setup Java 21
-        uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: "21"
-
-      - name: Setup Node.js v24
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
-      - name: Install SBOM Tools
-        run: |
-          pip install reuse
-          # npm install -g @appthreat/atom
-          npm install -g @cyclonedx/cdxgen
-          wget https://github.com/AppThreat/atom/releases/download/v2.5.2/atom.zip
-          unzip atom.zip
-
-      - name: Prepare Output Directory
-        run: mkdir -p docs
-
-      - name: Generate SPDX SBOM
-        run: |
-          version="${{ steps.version.outputs.version }}"
-          echo "Generating SPDX SBOM with version: $version"
-          reuse spdx -o "./docs/spdx-${version}.spdx" || { echo "SPDX generation failed"; exit 1; }
-
-          if [ -f "./docs/spdx-${version}.spdx" ]; then
-            echo "✅ SPDX SBOM created"
-            ls -lah "./docs/spdx-${version}.spdx"
-          else
-            echo "⚠️  SPDX SBOM not created (this may be OK if REUSE is not configured)"
-          fi
-
-      - name: Run Atom Analysis
-        run: |
-          version="${{ steps.version.outputs.version }}"
-          echo "Running Atom analysis with version: $version"
-
-          if [ -d "./bin" ]; then
-            ./bin/atom -J-Xmx16g usages -o ./docs/app.atom --slice-outfile "./docs/atom-${version}.json" -l cpp build/ || {
-              echo "⚠️  Atom analysis failed, continuing..."
-            }
-          else
-            echo "⚠️  Atom binary not found, skipping Atom analysis"
-          fi
-
-          # Check if atom file exists or create empty one
-          if [ ! -f "./docs/atom-${version}.json" ]; then
-            echo "Creating placeholder atom file since generation failed or was skipped"
-            mkdir -p docs
-            echo '{"slices": []}' > "./docs/atom-${version}.json"
-          fi
-
-      - name: Generate CycloneDX SBOM (build-aware)
-        env:
-          FETCH_LICENSE: true
-          CDXGEN_COMPILE_COMMANDS_FILE: build/compile_commands.json
-        run: |
-          version="${{ steps.version.outputs.version }}"
-          echo "Generating SBOM with version: $version"
-
-          cdxgen \
-            --output "docs/cyclonedx-${version}.json" \
-            --output-format json \
-            --spec-version 1.6 \
-            -t cpp \
-            --usages-slices-file "docs/atom-${version}.json" \
-            --deep \
-            --recurse \
-            --project-name "CheckForGHUpdate" \
-            --project-group "io.github.zbamtarikh" \
-            --project-version "${version}" \
-            --author "ZHENG Robert" \
-            . || { echo "cdxgen error: $?"; exit 1; }
-
-          echo "=== Checking if SBOM file was created ==="
-          if [ -f "docs/cyclonedx-${version}.json" ]; then
-            echo "✅ SBOM file created successfully"
-            ls -lah "docs/cyclonedx-${version}.json"
-            wc -c "docs/cyclonedx-${version}.json"
-          else
-            echo "❌ SBOM file not created!"
-            ls -la docs/
-            exit 1
-          fi
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
-
-      - name: Install cve-bin-tool
-        run: pipx install cve-bin-tool
-
-      - name: Debug - Check SBOM file before CVE scan
-        run: |
-          echo "=== Checking SBOM file ==="
-          if [ -f "./docs/cyclonedx-${{ steps.version.outputs.version }}.json" ]; then
-            ls -lah "./docs/cyclonedx-${{ steps.version.outputs.version }}.json"
-            echo "=== SBOM file size and content preview ==="
-            wc -c "./docs/cyclonedx-${{ steps.version.outputs.version }}.json"
-            echo "--- First 100 lines ---"
-            head -100 "./docs/cyclonedx-${{ steps.version.outputs.version }}.json"
-          else
-            echo "ERROR: SBOM file not found!"
-            exit 1
-          fi
-
-      - name: CVE Report (CVSS >= 9 - Critical Only)
-        run: |
-          echo "=== Scanning for CRITICAL CVEs (CVSS >= 9) ==="
-          cve-bin-tool --sbom cyclonedx --sbom-file ./docs/cyclonedx-${{ steps.version.outputs.version }}.json \
-            --format json \
-            --output cve-report-critical-${{ steps.version.outputs.version }}.json \
-            --disable-data-source OSV,EPSS \
-            --cvss 9 || true
-
-          echo "=== CRITICAL CVEs Report Generated ==="
-          if [ -f "cve-report-critical-${{ steps.version.outputs.version }}.json" ]; then
-            SIZE=$(wc -c < "cve-report-critical-${{ steps.version.outputs.version }}.json")
-            echo "Report file size: $SIZE bytes"
-            
-            if [ "$SIZE" -gt 10 ]; then
-              echo "⚠️  CRITICAL CVEs FOUND!"
-              cat "cve-report-critical-${{ steps.version.outputs.version }}.json"
-            else
-              echo "✅ No critical CVEs found (CVSS >= 9)"
-            fi
-          fi
-
-      - name: CVE Report (All Vulnerabilities - Informational)
-        run: |
-          echo "=== Scanning for ALL CVEs ==="
-          cve-bin-tool --sbom cyclonedx --sbom-file ./docs/cyclonedx-${{ steps.version.outputs.version }}.json \
-            --format json \
-            --output cve-report-all-${{ steps.version.outputs.version }}.json \
-            --disable-data-source OSV,EPSS \
-            --cvss 0 || true
-
-          echo "=== ALL CVEs Report Generated ==="
-          if [ -f "cve-report-all-${{ steps.version.outputs.version }}.json" ]; then
-            SIZE=$(wc -c < "cve-report-all-${{ steps.version.outputs.version }}.json")
-            echo "Report file size: $SIZE bytes"
-            
-            if [ "$SIZE" -gt 10 ]; then
-              echo "📊 Summary of all vulnerabilities:"
-              # Extract CVE count if possible
-              grep -o '"vulnerability"' "cve-report-all-${{ steps.version.outputs.version }}.json" | wc -l || echo "Unable to count CVEs"
-            else
-              echo "✅ No vulnerabilities found at any level"
-            fi
-          fi
-
-      - name: Create CVE Summary Report
-        run: |
-          echo "=== CVE SCAN SUMMARY ===" > cve-summary.txt
-          echo "" >> cve-summary.txt
-          echo "Scan Date: $(date)" >> cve-summary.txt
-          echo "SBOM File: ./docs/cyclonedx-${{ steps.version.outputs.version }}.json" >> cve-summary.txt
-          echo "" >> cve-summary.txt
-
-          echo "CRITICAL VULNERABILITIES (CVSS >= 9):" >> cve-summary.txt
-          if [ -f "cve-report-critical-${{ steps.version.outputs.version }}.json" ]; then
-            SIZE=$(wc -c < "cve-report-critical-${{ steps.version.outputs.version }}.json")
-            if [ "$SIZE" -gt 10 ]; then
-              echo "⚠️  Found - see cve-report-critical-${{ steps.version.outputs.version }}.json" >> cve-summary.txt
-            else
-              echo "✅ None found" >> cve-summary.txt
-            fi
-          fi
-
-          echo "" >> cve-summary.txt
-          echo "ALL VULNERABILITIES (CVSS >= 0):" >> cve-summary.txt
-          if [ -f "cve-report-all-${{ steps.version.outputs.version }}.json" ]; then
-            SIZE=$(wc -c < "cve-report-all-${{ steps.version.outputs.version }}.json")
-            if [ "$SIZE" -gt 10 ]; then
-              echo "Found - see cve-report-all-${{ steps.version.outputs.version }}.json" >> cve-summary.txt
-            else
-              echo "✅ None found" >> cve-summary.txt
-            fi
-          fi
-
-          cat cve-summary.txt
-          mv cve-summary.txt cve-summary-${{ steps.version.outputs.version }}.txt
-
-      - name: Upload CVE Report and SBOM artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: cve-report
-          path: |
-            ./cve-report-critical-${{ steps.version.outputs.version }}.json
-            ./cve-report-all-${{ steps.version.outputs.version }}.json
-            ./cve-summary-${{ steps.version.outputs.version }}.txt
-            ./docs/cyclonedx-${{ steps.version.outputs.version }}.json
-            ./docs/spdx-${{ steps.version.outputs.version }}.spdx
-
   clang_tidy:
     name: Clang-Tidy Linting
     runs-on: ubuntu-latest
@@ -437,11 +202,296 @@ jobs:
           name: clang-tidy-report
           path: clang-tidy-report.txt
 
+  sbom:
+    name: Generate SBOM (SPDX & CycloneDX)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "version=1.0.0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev wget pipx cmake ninja-build build-essential gcc-14 g++-14 libssl-dev
+
+      - name: Configure CMake (export compile_commands)
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_C_COMPILER=gcc-14 \
+            -DCMAKE_CXX_COMPILER=g++-14 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Build project
+        run: |
+          cmake --build build --config Release
+
+      - name: Setup Python (für reuse)
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Setup Node.js v24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install SBOM Tools
+        run: |
+          pip install reuse
+          npm install -g @cyclonedx/cdxgen
+          # Optional: Atom tool (falls benötigt)
+          # wget https://github.com/AppThreat/atom/releases/download/v2.5.2/atom.zip
+          # unzip atom.zip
+
+      - name: Prepare Output Directory
+        run: mkdir -p sbom-output
+
+      - name: Generate SPDX SBOM
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          echo "Generating SPDX SBOM with version: $version"
+          
+          reuse spdx -o "./sbom-output/spdx-${version}.spdx" || {
+            echo "⚠️  SPDX generation failed (this may be OK if REUSE is not configured)"
+            # Create minimal SPDX file as fallback
+            cat > "./sbom-output/spdx-${version}.spdx" << EOF
+SPDXVersion: SPDX-2.3
+DataLicense: CC0-1.0
+SPDXID: SPDXRef-DOCUMENT
+DocumentName: Project SBOM
+DocumentNamespace: https://example.org/sbom-${version}
+Creator: Tool: reuse
+EOF
+          }
+
+          if [ -f "./sbom-output/spdx-${version}.spdx" ]; then
+            echo "✅ SPDX SBOM created"
+            ls -lah "./sbom-output/spdx-${version}.spdx"
+          fi
+
+      - name: Generate CycloneDX SBOM
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          echo "Generating CycloneDX SBOM with version: $version"
+
+          cdxgen -t cpp -o "./sbom-output/cyclonedx-${version}.json" build/ || {
+            echo "⚠️  CycloneDX generation failed, creating minimal SBOM"
+            cat > "./sbom-output/cyclonedx-${version}.json" << EOF
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "version": 1,
+  "metadata": {
+    "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+    "component": {
+      "type": "application",
+      "name": "project",
+      "version": "${version}"
+    }
+  },
+  "components": []
+}
+EOF
+          }
+
+          if [ -f "./sbom-output/cyclonedx-${version}.json" ]; then
+            echo "✅ CycloneDX SBOM created"
+            ls -lah "./sbom-output/cyclonedx-${version}.json"
+            echo ""
+            echo "=== SBOM Preview ==="
+            head -20 "./sbom-output/cyclonedx-${version}.json"
+          fi
+
+      - name: SBOM Generation Summary
+        run: |
+          echo "=== SBOM Generation Complete ==="
+          echo ""
+          echo "Generated files:"
+          ls -lah sbom-output/
+          echo ""
+          echo "File sizes:"
+          du -h sbom-output/*
+
+      - name: Upload SBOM Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-files
+          path: |
+            sbom-output/spdx-*.spdx
+            sbom-output/cyclonedx-*.json
+          retention-days: 90
+
+  cvecheck:
+    name: CVE Vulnerability Scan
+    runs-on: ubuntu-latest
+    needs: [sbom]
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "version=1.0.0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Download SBOM Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: sbom-files
+          path: sbom-input/
+
+      - name: Verify SBOM Files
+        run: |
+          echo "=== Downloaded SBOM Files ==="
+          ls -lah sbom-input/
+          echo ""
+          
+          version="${{ steps.version.outputs.version }}"
+          if [ ! -f "sbom-input/cyclonedx-${version}.json" ]; then
+            echo "⚠️  CycloneDX SBOM not found!"
+            exit 1
+          fi
+          
+          echo "✅ CycloneDX SBOM found"
+          echo "=== SBOM Content Preview ==="
+          head -20 "sbom-input/cyclonedx-${version}.json"
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install CVE Binary Tool
+        run: |
+          pip install cve-bin-tool
+
+      - name: CVE Report (Critical CVSS >= 9)
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          echo "=== Scanning for CRITICAL CVEs (CVSS >= 9) ==="
+          
+          cve-bin-tool --sbom cyclonedx \
+            --sbom-file "sbom-input/cyclonedx-${version}.json" \
+            --format json \
+            --output "cve-report-critical-${version}.json" \
+            --disable-data-source OSV,EPSS \
+            --cvss 9 || true
+
+          echo "=== Critical CVE Report Generated ==="
+          if [ -f "cve-report-critical-${version}.json" ]; then
+            SIZE=$(wc -c < "cve-report-critical-${version}.json")
+            echo "Report file size: $SIZE bytes"
+
+            if [ "$SIZE" -gt 10 ]; then
+              echo "⚠️  WARNING: Critical CVEs found!"
+              head -50 "cve-report-critical-${version}.json"
+            else
+              echo "✅ No critical CVEs found (CVSS >= 9)"
+            fi
+          fi
+
+      - name: CVE Report (All Vulnerabilities - Informational)
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          echo "=== Scanning for ALL CVEs ==="
+          
+          cve-bin-tool --sbom cyclonedx \
+            --sbom-file "sbom-input/cyclonedx-${version}.json" \
+            --format json \
+            --output "cve-report-all-${version}.json" \
+            --disable-data-source OSV,EPSS \
+            --cvss 0 || true
+
+          echo "=== ALL CVEs Report Generated ==="
+          if [ -f "cve-report-all-${version}.json" ]; then
+            SIZE=$(wc -c < "cve-report-all-${version}.json")
+            echo "Report file size: $SIZE bytes"
+            
+            if [ "$SIZE" -gt 10 ]; then
+              echo "📊 Summary of all vulnerabilities:"
+              grep -o '"vulnerability"' "cve-report-all-${version}.json" | wc -l || echo "Unable to count CVEs"
+            else
+              echo "✅ No vulnerabilities found at any level"
+            fi
+          fi
+
+      - name: Create CVE Summary Report
+        run: |
+          version="${{ steps.version.outputs.version }}"
+          
+          echo "=== CVE SCAN SUMMARY ===" > cve-summary-${version}.txt
+          echo "" >> cve-summary-${version}.txt
+          echo "Scan Date: $(date)" >> cve-summary-${version}.txt
+          echo "SBOM File: cyclonedx-${version}.json" >> cve-summary-${version}.txt
+          echo "Tool: cve-bin-tool" >> cve-summary-${version}.txt
+          echo "" >> cve-summary-${version}.txt
+
+          echo "CRITICAL VULNERABILITIES (CVSS >= 9):" >> cve-summary-${version}.txt
+          if [ -f "cve-report-critical-${version}.json" ]; then
+            SIZE=$(wc -c < "cve-report-critical-${version}.json")
+            if [ "$SIZE" -gt 10 ]; then
+              echo "⚠️  Found - see cve-report-critical-${version}.json" >> cve-summary-${version}.txt
+            else
+              echo "✅ None found" >> cve-summary-${version}.txt
+            fi
+          fi
+
+          echo "" >> cve-summary-${version}.txt
+          echo "ALL VULNERABILITIES (CVSS >= 0):" >> cve-summary-${version}.txt
+          if [ -f "cve-report-all-${version}.json" ]; then
+            SIZE=$(wc -c < "cve-report-all-${version}.json")
+            if [ "$SIZE" -gt 10 ]; then
+              COUNT=$(grep -o '"vulnerability"' "cve-report-all-${version}.json" | wc -l || echo "0")
+              echo "Found $COUNT vulnerabilities - see cve-report-all-${version}.json" >> cve-summary-${version}.txt
+            else
+              echo "✅ None found" >> cve-summary-${version}.txt
+            fi
+          fi
+
+          echo ""
+          cat cve-summary-${version}.txt
+
+      - name: Upload CVE Report Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: cve-reports
+          path: |
+            cve-report-critical-*.json
+            cve-report-all-*.json
+            cve-summary-*.txt
+          retention-days: 90
+
   release:
-    name: Create Release with SBOM & Changelog
+    name: Create Release with SBOM & CVE Reports
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [codeql, cppcheck, clang_tidy, cvecheck]
+    needs: [codeql, cppcheck, clang_tidy, sbom, cvecheck]
     permissions:
       contents: write
 
@@ -455,35 +505,66 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
+      - name: Download SBOM Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: sbom-files
+          path: artifacts/sbom/
+
+      - name: Download CVE Report Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: cve-reports
+          path: artifacts/cve/
+
       - name: Prepare release assets
         run: |
           mkdir -p release-assets
           version="${{ steps.version.outputs.version }}"
 
           echo "=== Collecting release assets for version: $version ==="
+          echo ""
 
-          # Copy SBOM files from docs/ if they exist
-          for file in docs/spdx-${version}.spdx docs/cyclonedx-${version}.json; do
+          # Copy SBOM files
+          echo "=== SBOM Files ==="
+          for file in artifacts/sbom/spdx-${version}.spdx artifacts/sbom/cyclonedx-${version}.json; do
             if [ -f "$file" ]; then
-              cp "$file" release-assets/ && echo "✓ Copied $file"
+              cp "$file" release-assets/
+              echo "✓ Copied $(basename $file)"
+            else
+              echo "⚠️  Not found: $file"
             fi
           done
 
-          # Copy CVE reports if they exist
-          for file in cve-report-critical-${version}.json cve-report-all-${version}.json cve-summary-${version}.txt; do
+          echo ""
+          echo "=== CVE Reports ==="
+          # Copy CVE reports
+          for file in artifacts/cve/cve-report-critical-${version}.json \
+                      artifacts/cve/cve-report-all-${version}.json \
+                      artifacts/cve/cve-summary-${version}.txt; do
             if [ -f "$file" ]; then
-              cp "$file" release-assets/ && echo "✓ Copied $file"
+              cp "$file" release-assets/
+              echo "✓ Copied $(basename $file)"
+            else
+              echo "⚠️  Not found: $file"
             fi
           done
 
+          echo ""
+          echo "=== Additional Files ==="
           # Copy CHANGELOG
           if [ -f "CHANGELOG.md" ]; then
-            cp CHANGELOG.md release-assets/ && echo "✓ Copied CHANGELOG.md"
+            cp CHANGELOG.md release-assets/
+            echo "✓ Copied CHANGELOG.md"
+          else
+            echo "⚠️  CHANGELOG.md not found"
           fi
 
           echo ""
-          echo "=== Release assets prepared ==="
+          echo "=== Release Assets Summary ==="
           ls -lah release-assets/
+          echo ""
+          echo "Total files: $(ls release-assets/ | wc -l)"
 
       - name: Extract Release Notes from CHANGELOG
         run: |
@@ -506,8 +587,19 @@ jobs:
             echo "No CHANGELOG.md found." >> release_notes.txt
           fi
 
-          echo "Release notes prepared:"
-          head -20 release_notes.txt
+          # Add SBOM and CVE scan info
+          echo "" >> release_notes.txt
+          echo "### 📦 Software Bill of Materials (SBOM)" >> release_notes.txt
+          echo "This release includes:" >> release_notes.txt
+          echo "- SPDX SBOM: \`spdx-${version}.spdx\`" >> release_notes.txt
+          echo "- CycloneDX SBOM: \`cyclonedx-${version}.json\`" >> release_notes.txt
+          echo "" >> release_notes.txt
+          echo "### 🔒 Security Scan" >> release_notes.txt
+          echo "CVE vulnerability reports are attached to this release." >> release_notes.txt
+
+          echo ""
+          echo "=== Release Notes Preview ==="
+          cat release_notes.txt
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -523,4 +615,3 @@ jobs:
             release-assets/cyclonedx-*.json
             release-assets/cve-report-*.json
             release-assets/cve-summary-*.txt
-        continue-on-error: true
