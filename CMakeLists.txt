@@ -50,6 +50,12 @@ target_include_directories(gh_update_checker INTERFACE
     $<INSTALL_INTERFACE:include>
 )
 
+target_sources(gh_update_checker INTERFACE
+    FILE_SET HEADERS
+    BASE_DIRS include
+    FILES include/check_gh-update.hpp
+)
+
 # IMPORTANT: do NOT link external targets here
 target_link_libraries(gh_update_checker INTERFACE)
 
@@ -74,13 +80,9 @@ install(
 # ---------------------------------------------------------
 
 install(
-    DIRECTORY include/
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-
-install(
     TARGETS gh_update_checker
     EXPORT gh_update_checkerTargets
+    FILE_SET HEADERS DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 install(
