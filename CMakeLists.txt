@@ -8,6 +8,8 @@ cmake_minimum_required(VERSION 3.23)
 
 project(gh_update_checker
         VERSION 1.0.6
+        DESCRIPTION "CLI tool to check for GitHub release updates"
+        HOMEPAGE_URL "https://github.com/Zheng-Bote/gh-update-checker"
         LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
@@ -28,15 +30,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(nlohmann_json)
 
-#FetchContent_Declare(
-#    curl
-#    GIT_REPOSITORY https://github.com/curl/curl.git
-#    GIT_TAG curl-8_7_1 # CVEs !!!
-#    GIT_TAG curl-8_19_0
-#)
-#FetchContent_MakeAvailable(curl)
-# --- Find dependencies ---
-find_package(CURL REQUIRED)
+FetchContent_Declare(
+    curl
+    GIT_REPOSITORY https://github.com/curl/curl.git
+    #GIT_TAG curl-8_7_1 # CVEs !!!
+    GIT_TAG curl-8_19_0
+)
+FetchContent_MakeAvailable(curl)
+
 
 # ---------------------------------------------------------
 # Header-only library
@@ -59,12 +60,8 @@ target_link_libraries(gh_update_checker INTERFACE)
 add_executable(gh-update-checker cli/gh-update-checker.cpp)
 
 target_link_libraries(gh-update-checker
-    PUBLIC
-        CURL::libcurl
-    PRIVATE
-        gh-update-checker
-        nlohmann_json::nlohmann_json
-    #libcurl
+    nlohmann_json::nlohmann_json
+    libcurl
 )
 
 install(
