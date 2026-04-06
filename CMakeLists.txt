@@ -34,7 +34,6 @@ FetchContent_MakeAvailable(nlohmann_json)
 FetchContent_Declare(
     curl
     GIT_REPOSITORY https://github.com/curl/curl.git
-    #GIT_TAG curl-8_7_1 # CVEs !!!
     GIT_TAG curl-8_19_0
 )
 FetchContent_MakeAvailable(curl)
