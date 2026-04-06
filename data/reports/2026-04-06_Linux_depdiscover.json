@@ -209,9 +209,7 @@
         }
       ],
       "headers": [
-        "/home/runner/work/gh-update-checker/gh-update-checker/build/_deps/curl-src/include/curl/curl.h",
-        "/home/runner/work/gh-update-checker/gh-update-checker/build/_deps/curl-src/include/curl/mprintf.h",
-        "/home/runner/work/gh-update-checker/gh-update-checker/build/_deps/curl-src/include/curl/multi.h"
+        "/home/runner/work/gh-update-checker/gh-update-checker/build/_deps/curl-src/include/curl/curl.h"
       ],
       "libraries": [],
       "licenses": [
@@ -225,7 +223,7 @@
   ],
   "header": {
     "project": {
-      "name": "\"AI",
+      "name": "\"gh-update-checker\"",
       "workspace_root": "/home/runner/work/gh-update-checker/gh-update-checker"
     },
     "scan_date": "2026-04-06",
