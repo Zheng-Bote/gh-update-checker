@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Table of Contents**
 
 - [Changelog](#changelog)
-  - [\[Unreleased\]](#unreleased)
+  - [\[1.0.7\] - 2026-04-06](#107---2026-04-06)
     - [Added](#added)
     - [Changed](#changed)
     - [Fixed](#fixed)
@@ -46,7 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [1.0.7] - 2026-04-06
 
 ### Added
 
@@ -55,15 +55,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for pre-release versions in semantic versioning parser
 - Integration with GitHub Actions workflow examples
 - Docker support for containerized CLI usage
+- Modernized CMake header handling using `FILE_SET HEADERS`
 
 ### Changed
 
+- Updated `curl` dependency to `8.19.0`
 - Improved error messages with more diagnostic information
 - Async version now uses `std::jthread` instead of `std::async` (C++20 compatibility)
 - Enhanced documentation with additional examples and recipes
 
 ### Fixed
 
+- Resolved missing `libpsl` and other `curl` dependencies in GitHub Workflows
+- Fixed build error where `check_gh-update.hpp` was not found in `gh-update-checker` CLI
 - Network timeout handling improvements
 - Better error recovery for transient network failures
 
@@ -287,6 +291,6 @@ Categories to use (in order):
 
 ---
 
-**Last Updated**: 2026-02-10
-**Current Stable Version**: [1.0.1]
+**Last Updated**: 2026-04-06
+**Current Stable Version**: [1.0.7]
 **Development Version**: [Unreleased]

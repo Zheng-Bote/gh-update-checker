@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.23)
 # gh-update-checker https://api.github.com/repos/nlohmann/json/releases/latest 3.11.2
 
 project(gh_update_checker
-        VERSION 1.0.6
+        VERSION 1.0.7
         DESCRIPTION "CLI tool to check for GitHub release updates"
         HOMEPAGE_URL "https://github.com/Zheng-Bote/gh-update-checker"
         LANGUAGES CXX)
