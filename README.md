@@ -147,7 +147,7 @@ Perfect for:
 
 ```bash
 # Ubuntu/Debian
-sudo apt-get install cmake build-essential git
+sudo apt-get install cmake build-essential git libpsl-dev libidn2-dev libnghttp2-dev libbrotli-dev
 
 # macOS (Homebrew)
 brew install cmake
