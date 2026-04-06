@@ -41,27 +41,6 @@
       "source": "cmake_target",
       "type": "cmake_target",
       "version": "v3.11.3"
-    },
-    {
-      "cves": [
-        {
-          "fixed_version": "",
-          "id": "NOT-CHECKED",
-          "severity": "UNKNOWN",
-          "summary": "Version unknown or latest, cannot query OSV",
-          "suppressed": false,
-          "suppression_reason": ""
-        }
-      ],
-      "headers": [],
-      "libraries": [],
-      "licenses": [
-        "UNKNOWN"
-      ],
-      "name": "CURL::libcurl",
-      "source": "cmake_target",
-      "type": "cmake_target",
-      "version": "unknown"
     }
   ],
   "header": {
