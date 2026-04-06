@@ -4,6 +4,27 @@
       "cves": [
         {
           "fixed_version": "",
+          "id": "NOT-CHECKED",
+          "severity": "UNKNOWN",
+          "summary": "Version unknown or latest, cannot query OSV",
+          "suppressed": false,
+          "suppression_reason": ""
+        }
+      ],
+      "headers": [],
+      "libraries": [],
+      "licenses": [
+        "UNKNOWN"
+      ],
+      "name": "gh_update_checker",
+      "source": "cmake_target",
+      "type": "cmake_target",
+      "version": "unknown"
+    },
+    {
+      "cves": [
+        {
+          "fixed_version": "",
           "id": "SAFE",
           "severity": "NONE",
           "summary": "No vulnerabilities found in ecosystem 'Debian'. Checked on 2026-04-06",
@@ -14,12 +35,12 @@
       "headers": [],
       "libraries": [],
       "licenses": [
-        "MIT"
+        "UNKNOWN"
       ],
-      "name": "nlohmann_json",
-      "source": "pkgconfig",
-      "type": "cmake_fetch",
-      "version": "3.11.3"
+      "name": "nlohmann_json::nlohmann_json",
+      "source": "cmake_target",
+      "type": "cmake_target",
+      "version": "v3.11.3"
     },
     {
       "cves": [
@@ -81,9 +102,41 @@
         },
         {
           "fixed_version": "8.5.0-1",
+          "id": "DEBIAN-CVE-2023-46218",
+          "severity": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+          "summary": "This flaw allows a malicious HTTP server to set \"super cookies\" in curl that are then passed back to more origins than what is otherwise allowed or...",
+          "suppressed": false,
+          "suppression_reason": ""
+        },
+        {
+          "fixed_version": "8.5.0-1",
           "id": "DEBIAN-CVE-2023-46219",
           "severity": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
           "summary": "When saving HSTS data to an excessively long file name, curl could end up removing all contents, making subsequent requests using that file unaware...",
+          "suppressed": false,
+          "suppression_reason": ""
+        },
+        {
+          "fixed_version": "8.6.0-1",
+          "id": "DEBIAN-CVE-2024-0853",
+          "severity": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
+          "summary": "curl inadvertently kept the SSL session ID for connections in its cache even when the verify status (*OCSP stapling*) test failed. A subsequent tra...",
+          "suppressed": false,
+          "suppression_reason": ""
+        },
+        {
+          "fixed_version": "8.11.1-1",
+          "id": "DEBIAN-CVE-2024-11053",
+          "severity": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:C/C:L/I:N/A:N",
+          "summary": "When asked to both use a `.netrc` file for credentials and to follow HTTP redirects, curl could leak the password used for the first host to the fo...",
+          "suppressed": false,
+          "suppression_reason": ""
+        },
+        {
+          "fixed_version": "8.7.1-1",
+          "id": "DEBIAN-CVE-2024-2004",
+          "severity": "CVSS:3.1/AV:N/AC:L/PR:L/UI:R/S:U/C:L/I:N/A:N",
+          "summary": "When a protocol selection parameter option disables all protocols without adding any then the default set of protocols would remain in the allowed ...",
           "suppressed": false,
           "suppression_reason": ""
         },
@@ -96,10 +149,74 @@
           "suppression_reason": ""
         },
         {
+          "fixed_version": "8.7.1-1",
+          "id": "DEBIAN-CVE-2024-2398",
+          "severity": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:L/A:L",
+          "summary": "When an application tells libcurl it wants to allow HTTP/2 server push, and the amount of received headers for the push surpasses the maximum allow...",
+          "suppressed": false,
+          "suppression_reason": ""
+        },
+        {
+          "fixed_version": "8.7.1-1",
+          "id": "DEBIAN-CVE-2024-2466",
+          "severity": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+          "summary": "libcurl did not check the server certificate of TLS connections done to a host specified as an IP address, when built to use mbedTLS.  libcurl woul...",
+          "suppressed": false,
+          "suppression_reason": ""
+        },
+        {
+          "fixed_version": "8.9.0-1",
+          "id": "DEBIAN-CVE-2024-6197",
+          "severity": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "summary": "libcurl's ASN1 parser has this utf8asn1str() function used for parsing an ASN.1 UTF-8 string. Itcan detect an invalid field and return error. Unfor...",
+          "suppressed": false,
+          "suppression_reason": ""
+        },
+        {
+          "fixed_version": "8.9.0-1",
+          "id": "DEBIAN-CVE-2024-6874",
+          "severity": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:N",
+          "summary": "libcurl's URL API function [curl_url_get()](https://curl.se/libcurl/c/curl_url_get.html) offers punycode conversions, to and from IDN. Asking to co...",
+          "suppressed": false,
+          "suppression_reason": ""
+        },
+        {
+          "fixed_version": "8.9.1-1",
+          "id": "DEBIAN-CVE-2024-7264",
+          "severity": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+          "summary": "libcurl's ASN1 parser code has the `GTime2str()` function, used for parsing an ASN.1 Generalized Time field. If given an syntactically incorrect fi...",
+          "suppressed": false,
+          "suppression_reason": ""
+        },
+        {
+          "fixed_version": "8.10.0-1",
+          "id": "DEBIAN-CVE-2024-8096",
+          "severity": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+          "summary": "When curl is told to use the Certificate Status Request TLS extension, often referred to as OCSP stapling, to verify that the server certificate is...",
+          "suppressed": false,
+          "suppression_reason": ""
+        },
+        {
           "fixed_version": "8.11.0-1",
           "id": "DEBIAN-CVE-2024-9681",
           "severity": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:H/A:L",
           "summary": "When curl is asked to use HSTS, the expiry time for a subdomain might overwrite a parent domain's cache entry, making it end sooner or later than o...",
+          "suppressed": false,
+          "suppression_reason": ""
+        },
+        {
+          "fixed_version": "8.12.0+git20250209.89ed161+ds-1",
+          "id": "DEBIAN-CVE-2025-0167",
+          "severity": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:C/C:L/I:N/A:N",
+          "summary": "When asked to use a `.netrc` file for credentials **and** to follow HTTP redirects, curl could leak the password used for the first host to the fol...",
+          "suppressed": false,
+          "suppression_reason": ""
+        },
+        {
+          "fixed_version": "8.12.0+git20250209.89ed161+ds-1",
+          "id": "DEBIAN-CVE-2025-0665",
+          "severity": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:H",
+          "summary": "libcurl would wrongly close the same eventfd file descriptor twice when taking down a connection channel after having completed a threaded name res...",
           "suppressed": false,
           "suppression_reason": ""
         },
@@ -124,6 +241,14 @@
           "id": "DEBIAN-CVE-2025-10966",
           "severity": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:N",
           "summary": "curl's code for managing SSH connections when SFTP was done using the wolfSSH powered backend was flawed and missed host verification mechanisms.  ...",
+          "suppressed": false,
+          "suppression_reason": ""
+        },
+        {
+          "fixed_version": "8.17.0-2",
+          "id": "DEBIAN-CVE-2025-11563",
+          "severity": "CVSS:3.1/AV:N/AC:L/PR:L/UI:R/S:U/C:L/I:L/A:N",
+          "summary": "URLs containing percent-encoded slashes (`/` or `\\`) can trick wcurl into saving the output file outside of the current directory without the user ...",
           "suppressed": false,
           "suppression_reason": ""
         },
@@ -176,6 +301,38 @@
           "suppression_reason": ""
         },
         {
+          "fixed_version": "8.14.0-1",
+          "id": "DEBIAN-CVE-2025-4947",
+          "severity": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+          "summary": "libcurl accidentally skips the certificate verification for QUIC connections when connecting to a host specified as an IP address in the URL. There...",
+          "suppressed": false,
+          "suppression_reason": ""
+        },
+        {
+          "fixed_version": "8.14.0-1",
+          "id": "DEBIAN-CVE-2025-5025",
+          "severity": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N",
+          "summary": "libcurl supports *pinning* of the server certificate public key for HTTPS transfers. Due to an omission, this check is not performed when connectin...",
+          "suppressed": false,
+          "suppression_reason": ""
+        },
+        {
+          "fixed_version": "8.14.1-1",
+          "id": "DEBIAN-CVE-2025-5399",
+          "severity": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "summary": "Due to a mistake in libcurl's WebSocket code, a malicious server can send a particularly crafted packet which makes libcurl get trapped in an endle...",
+          "suppressed": false,
+          "suppression_reason": ""
+        },
+        {
+          "fixed_version": "8.16.0~rc2-1",
+          "id": "DEBIAN-CVE-2025-9086",
+          "severity": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "summary": "1. A cookie is set using the `secure` keyword for `https://target`   2. curl is redirected to or otherwise made to speak with `http://target` (same...",
+          "suppressed": false,
+          "suppression_reason": ""
+        },
+        {
           "fixed_version": "8.19.0~rc3-1",
           "id": "DEBIAN-CVE-2026-1965",
           "severity": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N",
@@ -209,16 +366,26 @@
         }
       ],
       "headers": [
-        "/home/runner/work/gh-update-checker/gh-update-checker/build/_deps/curl-src/include/curl/curl.h"
+        "/usr/include/x86_64-linux-gnu/openssl/opensslconf.h",
+        "/usr/include/x86_64-linux-gnu/sys/eventfd.h",
+        "/usr/include/x86_64-linux-gnu/sys/ioctl.h",
+        "/usr/include/x86_64-linux-gnu/sys/param.h",
+        "/usr/include/x86_64-linux-gnu/sys/poll.h",
+        "/usr/include/x86_64-linux-gnu/sys/select.h",
+        "/usr/include/x86_64-linux-gnu/sys/socket.h",
+        "/usr/include/x86_64-linux-gnu/sys/stat.h",
+        "/usr/include/x86_64-linux-gnu/sys/time.h",
+        "/usr/include/x86_64-linux-gnu/sys/types.h",
+        "/usr/include/x86_64-linux-gnu/sys/un.h"
       ],
       "libraries": [],
       "licenses": [
-        "See file: COPYING"
+        "curl"
       ],
-      "name": "curl",
-      "source": "cmake_fetchcontent",
-      "type": "cmake_fetch",
-      "version": "curl-8_7_1"
+      "name": "libcurl",
+      "source": "pkgconfig",
+      "type": "cmake_target",
+      "version": "8.5.0"
     }
   ],
   "header": {
