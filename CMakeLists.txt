@@ -14,6 +14,7 @@ project(gh_update_checker
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(FetchContent)
 include(GNUInstallDirs)
@@ -119,3 +120,6 @@ target_link_libraries(test_basic
 )
 
 add_test(NAME basic_update_check COMMAND test_basic)
+
+file(GENERATE OUTPUT "${CMAKE_BINARY_DIR}/libs.txt" 
+     CONTENT "$<TARGET_PROPERTY:gh-update-checker,LINK_LIBRARIES>")
