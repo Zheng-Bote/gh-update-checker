@@ -27,6 +27,7 @@ FetchContent_Declare(
     GIT_TAG v3.11.3
 )
 FetchContent_MakeAvailable(nlohmann_json)
+set(JSON_BuildTests OFF CACHE INTERNAL "")
 
 FetchContent_Declare(
     curl
