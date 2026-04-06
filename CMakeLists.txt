@@ -35,7 +35,7 @@ FetchContent_MakeAvailable(nlohmann_json)
 # System Dependencies
 # ---------------------------------------------------------
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-find_package(CURL 8.14 REQUIRED)
+find_package(CURL 8.5 REQUIRED)
 message(STATUS "Found CURL version: ${CURL_VERSION_STRING}")
 message(STATUS "Using CURL version: ${CURL_VERSION}")
 
