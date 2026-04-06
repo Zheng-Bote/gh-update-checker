@@ -1,0 +1,2 @@
+nlohmann_json,https://github.com/nlohmann/json.git,v3.11.3
+curl,https://github.com/curl/curl.git,curl-8_7_1
