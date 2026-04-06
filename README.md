@@ -574,10 +574,10 @@ GitHub API has rate limits. For authenticated requests, set an OAuth token:
 ### External (Auto-fetched)
 
 - **nlohmann/json** v3.11.3 - JSON parsing
-- **libcurl** v8.7.1 - HTTP requests
 
 ### System
 
+- **libcurl** v8.19.0+ - HTTP requests (via `find_package`)
 - Standard C++ Library (C++23)
 - System SSL/TLS for HTTPS support
 
@@ -609,7 +609,7 @@ Contributions are welcome! Please:
 int main() {
     std::vector<std::pair<std::string, std::string>> repos = {
         {"https://github.com/nlohmann/json", "3.11.2"},
-        {"https://github.com/curl/curl", "8.7.0"},
+        {"https://github.com/curl/curl", "8.19.0"},
     };
 
     for (const auto& [url, version] : repos) {
@@ -632,7 +632,7 @@ int main() {
 
 DEPS=(
     "https://github.com/nlohmann/json::3.11.2"
-    "https://github.com/curl/curl::8.7.0"
+    "https://github.com/curl/curl::8.19.0"
 )
 
 for dep in "${DEPS[@]}"; do

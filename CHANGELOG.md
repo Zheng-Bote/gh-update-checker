@@ -46,6 +46,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.8] - 2026-04-06
+
+### Changed
+
+- Switched `libcurl` dependency from `FetchContent` to `find_package(CURL REQUIRED)` for better system integration
+- Updated project version to `1.0.8`
+
+### Fixed
+
+- Cleaned up obsolete security reports and build artifacts related to older `curl` versions
+
 ## [1.0.7] - 2026-04-06
 
 ### Added
@@ -212,7 +223,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Dependencies
 
 - **nlohmann/json** 3.11.3+ for JSON parsing
-- **libcurl** 8.7.1+ for HTTP/HTTPS requests
+- **libcurl** 8.19.0+ for HTTP/HTTPS requests
 - **C++23 compatible compiler**:
   - GCC 13.2 or later
   - Clang 17 or later

@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.23)
 # gh-update-checker https://api.github.com/repos/nlohmann/json/releases/latest 3.11.2
 
 project(gh_update_checker
-        VERSION 1.0.7
+        VERSION 1.0.8
         DESCRIPTION "CLI tool to check for GitHub release updates"
         HOMEPAGE_URL "https://github.com/Zheng-Bote/gh-update-checker"
         LANGUAGES CXX)
@@ -31,13 +31,11 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(nlohmann_json)
 
-FetchContent_Declare(
-    curl
-    GIT_REPOSITORY https://github.com/curl/curl.git
-    #GIT_TAG curl-8_7_1 # CVEs !!!
-    GIT_TAG curl-8_19_0
-)
-FetchContent_MakeAvailable(curl)
+# ---------------------------------------------------------
+# System Dependencies
+# ---------------------------------------------------------
+
+find_package(CURL REQUIRED)
 
 
 # ---------------------------------------------------------
@@ -58,7 +56,9 @@ target_sources(gh_update_checker INTERFACE
 )
 
 # IMPORTANT: do NOT link external targets here
-target_link_libraries(gh_update_checker INTERFACE)
+target_link_libraries(gh_update_checker INTERFACE
+    CURL::libcurl
+)
 
 # ---------------------------------------------------------
 # CLI tool
@@ -69,7 +69,7 @@ add_executable(gh-update-checker cli/gh-update-checker.cpp)
 target_link_libraries(gh-update-checker
     gh_update_checker
     nlohmann_json::nlohmann_json
-    libcurl
+    CURL::libcurl
 )
 
 install(
@@ -116,7 +116,7 @@ add_executable(test_basic tests/test_basic.cpp)
 target_link_libraries(test_basic
     gh_update_checker
     nlohmann_json::nlohmann_json
-    libcurl
+    CURL::libcurl
 )
 
 add_test(NAME basic_update_check COMMAND test_basic)
