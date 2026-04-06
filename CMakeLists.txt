@@ -27,15 +27,16 @@ FetchContent_Declare(
     GIT_TAG v3.11.3
 )
 FetchContent_MakeAvailable(nlohmann_json)
-set(JSON_BuildTests OFF CACHE INTERNAL "")
 
-FetchContent_Declare(
-    curl
-    GIT_REPOSITORY https://github.com/curl/curl.git
-    GIT_TAG curl-8_7_1
-    #GIT_TAG curl-8_19_0
-)
-FetchContent_MakeAvailable(curl)
+#FetchContent_Declare(
+#    curl
+#    GIT_REPOSITORY https://github.com/curl/curl.git
+#    GIT_TAG curl-8_7_1 # CVEs !!!
+#    GIT_TAG curl-8_19_0
+#)
+#FetchContent_MakeAvailable(curl)
+# --- Find dependencies ---
+find_package(CURL REQUIRED)
 
 # ---------------------------------------------------------
 # Header-only library
@@ -60,7 +61,8 @@ add_executable(gh-update-checker cli/gh-update-checker.cpp)
 target_link_libraries(gh-update-checker
     gh_update_checker
     nlohmann_json::nlohmann_json
-    libcurl
+    #libcurl
+    CURL::libcurl
 )
 
 install(
