@@ -62,6 +62,7 @@ target_link_libraries(gh-update-checker
     PUBLIC
         CURL::libcurl
     PRIVATE
+        gh-update-checker
         nlohmann_json::nlohmann_json
     #libcurl
 )
