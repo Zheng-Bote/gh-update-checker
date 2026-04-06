@@ -33,7 +33,7 @@ jobs:
       - name: Run depdiscover Action
         uses: Zheng-Bote/depdiscover@v1
         with:
-          project-name: "AI plugin-system"
+          project-name: gh-update-checker
           compile-commands: "build/compile_commands.json"
           libs: "build/libs.txt"
           cmake: "CMakeLists.txt"
