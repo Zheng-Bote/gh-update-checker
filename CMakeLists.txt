@@ -62,7 +62,8 @@ target_link_libraries(gh-update-checker
     gh_update_checker
     nlohmann_json::nlohmann_json
     #libcurl
-    CURL::libcurl
+    PUBLIC
+        CURL::libcurl
 )
 
 install(
