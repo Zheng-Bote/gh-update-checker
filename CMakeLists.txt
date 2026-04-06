@@ -66,6 +66,7 @@ target_link_libraries(gh_update_checker INTERFACE)
 add_executable(gh-update-checker cli/gh-update-checker.cpp)
 
 target_link_libraries(gh-update-checker
+    gh_update_checker
     nlohmann_json::nlohmann_json
     libcurl
 )

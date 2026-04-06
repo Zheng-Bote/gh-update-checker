@@ -1,29 +1,39 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 **Table of Contents**
 
 - [Changelog](#changelog)
-  - [[Unreleased]](#unreleased)
+  - [\[Unreleased\]](#unreleased)
     - [Added](#added)
     - [Changed](#changed)
     - [Fixed](#fixed)
-  - [[1.0.4] - 2026-02-09](#104---2026-02-09)
+  - [\[1.0.4\] - 2026-02-09](#104---2026-02-09)
     - [Fixed](#fixed-1)
     - [Changed](#changed-1)
     - [Added](#added-1)
-  - [[1.0.5] - 2026-02-09](#105---2026-02-09)
+  - [\[1.0.5\] - 2026-02-09](#105---2026-02-09)
     - [Fixed](#fixed-2)
     - [Changed](#changed-2)
     - [Added](#added-2)
-  - [[1.0.1] - 2026-02-10](#101---2026-02-10)
+  - [\[1.0.1\] - 2026-02-10](#101---2026-02-10)
     - [Fixed](#fixed-3)
     - [Changed](#changed-3)
     - [Added](#added-3)
-  - [[1.0.0] - 2026-02-09](#100---2026-02-09)
+  - [\[1.0.0\] - 2026-02-09](#100---2026-02-09)
     - [Added](#added-4)
     - [Documentation](#documentation)
     - [Testing](#testing)
-    - [Build & Packaging](#build--packaging)
+    - [Build \& Packaging](#build--packaging)
     - [Known Limitations](#known-limitations)
     - [Dependencies](#dependencies)
     - [Contributors](#contributors)
@@ -34,12 +44,7 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# Changelog
-
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+---
 
 ## [Unreleased]
 
