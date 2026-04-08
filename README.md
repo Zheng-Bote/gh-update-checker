@@ -4,7 +4,6 @@ A modern C++23 library and CLI tool to check for the latest releases of GitHub r
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![CLA assistant](https://cla-assistant.io/readme/badge/Zheng-Bote/gh-update-checker)](https://cla-assistant.io/Zheng-Bote/gh-update-checker)
-
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/Zheng-Bote/gh-update-checker?logo=GitHub)](https://github.com/Zheng-Bote/gh-update-checker/releases)
 
 [Report Issue](https://github.com/Zheng-Bote/gh-update-checker/issues) · [Request Feature](https://github.com/Zheng-Bote/gh-update-checker/pulls)
