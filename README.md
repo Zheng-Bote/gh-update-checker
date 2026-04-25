@@ -16,63 +16,64 @@
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 **Table of Contents**
 
-  - [Overview](#overview)
-  - [Features](#features)
-  - [Requirements](#requirements)
-    - [Build Requirements](#build-requirements)
-    - [Runtime Requirements](#runtime-requirements)
-  - [Installation](#installation)
-    - [Option 1: Build from Source (Recommended)](#option-1-build-from-source-recommended)
-      - [Prerequisites](#prerequisites)
-      - [Clone and Build](#clone-and-build)
-      - [Install](#install)
-    - [Option 2: Using as a Header-Only Library in CMakeLists.txt](#option-2-using-as-a-header-only-library-in-cmakeliststxt)
-  - [Usage](#usage)
-    - [Command-Line Interface](#command-line-interface)
-      - [Basic Usage](#basic-usage)
-      - [Using GitHub API URLs](#using-github-api-urls)
-      - [Exit Codes](#exit-codes)
-      - [Practical Examples](#practical-examples)
-    - [C++ Library Usage](#c-library-usage)
-      - [Synchronous Update Check](#synchronous-update-check)
-      - [Asynchronous Update Check](#asynchronous-update-check)
-      - [Parsing Semantic Versions](#parsing-semantic-versions)
-    - [CMakeLists.txt Integration](#cmakeliststxt-integration)
-  - [Building and Testing](#building-and-testing)
-    - [Build Options](#build-options)
-    - [Running Tests](#running-tests)
-    - [Test Coverage](#test-coverage)
-  - [Development](#development)
-    - [Project Structure](#project-structure)
-    - [Building with Different Compilers](#building-with-different-compilers)
-      - [GCC](#gcc)
-      - [Clang](#clang)
-      - [MSVC (Windows)](#msvc-windows)
-    - [Code Style and Standards](#code-style-and-standards)
-    - [Compiler Flags](#compiler-flags)
-  - [Error Handling](#error-handling)
-  - [Performance Considerations](#performance-considerations)
-  - [Troubleshooting](#troubleshooting)
-    - [Build Issues](#build-issues)
-      - [CMake not found](#cmake-not-found)
-      - [C++23 not supported](#c23-not-supported)
-      - [cpp-httplib or nlohmann/json not found](#cpp-httplib-or-nlohmannjson-not-found)
-    - [Runtime Issues](#runtime-issues)
-      - [Network timeouts](#network-timeouts)
-      - [Invalid version format](#invalid-version-format)
-      - [Rate limiting](#rate-limiting)
-  - [Dependencies](#dependencies)
-    - [External (Auto-fetched)](#external-auto-fetched)
-    - [System](#system)
-  - [License](#license)
-  - [Contributing](#contributing)
-  - [Examples and Recipes](#examples-and-recipes)
-    - [Checking Multiple Repositories](#checking-multiple-repositories)
-    - [Integration with Build Systems](#integration-with-build-systems)
-  - [Support](#support)
-  - [Changelog](#changelog)
+- [Overview](#overview)
+- [Features](#features)
+- [Requirements](#requirements)
+  - [Build Requirements](#build-requirements)
+  - [Runtime Requirements](#runtime-requirements)
+- [Installation](#installation)
+  - [Option 1: Build from Source (Recommended)](#option-1-build-from-source-recommended)
+    - [Prerequisites](#prerequisites)
+    - [Clone and Build](#clone-and-build)
+    - [Install](#install)
+  - [Option 2: Using as a Header-Only Library in CMakeLists.txt](#option-2-using-as-a-header-only-library-in-cmakeliststxt)
+- [Usage](#usage)
+  - [Command-Line Interface](#command-line-interface)
+    - [Basic Usage](#basic-usage)
+    - [Using GitHub API URLs](#using-github-api-urls)
+    - [Exit Codes](#exit-codes)
+    - [Practical Examples](#practical-examples)
+  - [C++ Library Usage](#c-library-usage)
+    - [Synchronous Update Check](#synchronous-update-check)
+    - [Asynchronous Update Check](#asynchronous-update-check)
+    - [Parsing Semantic Versions](#parsing-semantic-versions)
+  - [CMakeLists.txt Integration](#cmakeliststxt-integration)
+- [Building and Testing](#building-and-testing)
+  - [Build Options](#build-options)
+  - [Running Tests](#running-tests)
+  - [Test Coverage](#test-coverage)
+- [Development](#development)
+  - [Project Structure](#project-structure)
+  - [Building with Different Compilers](#building-with-different-compilers)
+    - [GCC](#gcc)
+    - [Clang](#clang)
+    - [MSVC (Windows)](#msvc-windows)
+  - [Code Style and Standards](#code-style-and-standards)
+  - [Compiler Flags](#compiler-flags)
+- [Error Handling](#error-handling)
+- [Performance Considerations](#performance-considerations)
+- [Troubleshooting](#troubleshooting)
+  - [Build Issues](#build-issues)
+    - [CMake not found](#cmake-not-found)
+    - [C++23 not supported](#c23-not-supported)
+    - [cpp-httplib or nlohmann/json not found](#cpp-httplib-or-nlohmannjson-not-found)
+  - [Runtime Issues](#runtime-issues)
+    - [Network timeouts](#network-timeouts)
+    - [Invalid version format](#invalid-version-format)
+    - [Rate limiting](#rate-limiting)
+- [Dependencies](#dependencies)
+  - [External (Auto-fetched)](#external-auto-fetched)
+  - [System](#system)
+- [License](#license)
+- [Contributing](#contributing)
+- [Examples and Recipes](#examples-and-recipes)
+  - [Checking Multiple Repositories](#checking-multiple-repositories)
+  - [Integration with Build Systems](#integration-with-build-systems)
+- [Support](#support)
+- [Changelog](#changelog)
 - [Contributing](#contributing-1)
 - [License](#license-1)
 - [Author](#author)
@@ -83,7 +84,6 @@
 ---
 
 ## Overview
-
 
 [![C++23](https://img.shields.io/badge/C%2B%2B-23-blue.svg)]()
 [![CMake](https://img.shields.io/badge/CMake-3.23+-blue.svg)]()
@@ -569,22 +569,6 @@ GitHub API has rate limits. For authenticated requests, set an OAuth token:
 
 - Standard C++ Library (C++23)
 - System SSL/TLS runtime libraries as required by `cpp-httplib` OpenSSL support
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-SPDX-License-Identifier: MIT
-
-## Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Submit a pull request
 
 ## Examples and Recipes
 
