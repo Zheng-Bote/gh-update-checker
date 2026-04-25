@@ -2,7 +2,7 @@
 
 A modern C++23 library and CLI tool to check for the latest releases of GitHub repositories using semantic versioning (SemVer).
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: LGPL-3](https://img.shields.io/badge/LGPL-3.0-lightyellow)
 [![CLA assistant](https://cla-assistant.io/readme/badge/Zheng-Bote/gh-update-checker)](https://cla-assistant.io/Zheng-Bote/gh-update-checker)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/Zheng-Bote/gh-update-checker?logo=GitHub)](https://github.com/Zheng-Bote/gh-update-checker/releases)
 
@@ -675,7 +675,7 @@ Contributions are welcome! Please fork the repository and create a pull request.
 
 # License
 
-Distributed under the MIT License. See LICENSE for more information.
+Distributed under the LGPL-3.0 License. See LICENSE for more information.
 
 Copyright (c) 2026 ZHENG Robert
 
