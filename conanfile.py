@@ -6,6 +6,11 @@ class GhUpdateCheckerConan(ConanFile):
     name = "gh-update-checker"
     version = "1.0.9"
     package_type = "header-library"
+    license = "LGPL-3.0"
+    author = "ZHENG Robert <robert@hase-zheng.net>"
+    url = "https://github.com/Zheng-Bote/gh-update-checker"
+    description = "Header-only C++23 library to check GitHub release updates"
+    topics = ("Utilities", "GitHub", "Update Checker", "Header-only", "C++23")
     exports_sources = (
         "CMakeLists.txt",
         "cmake/*",

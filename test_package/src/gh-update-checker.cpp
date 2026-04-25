@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
         std::cerr << "Example:\n";
         std::cerr << "  gh-update-checker "
                      "https://api.github.com/repos/zheng-bote/gh-update-checker/releases/latest v1.0.8\n";
-        return 1;
+        return 0;
     }
 
     std::string repo = argv[1];

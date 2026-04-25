@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = -DCPPHTTPLIB_OPENSSL_SUPPORT -DCPPHTTPLIB_USE_NON_BLOCKING_GETADDRINFO
 
-CXX_INCLUDES = -isystem /home/zb_bamboo/.conan2/p/b/gh-up1db8acfaff592/p/include -isystem /home/zb_bamboo/.conan2/p/nlohmd014ef7748f4b/p/include -isystem /home/zb_bamboo/.conan2/p/cpp-hcf02b31b84347/p/include -isystem /home/zb_bamboo/.conan2/p/cpp-hcf02b31b84347/p/include/httplib -isystem /home/zb_bamboo/.conan2/p/b/opens53724d897cb7d/p/include
+CXX_INCLUDES = -isystem /home/zb_bamboo/.conan2/p/b/gh-up61fbdb379553e/p/include -isystem /home/zb_bamboo/.conan2/p/nlohmd014ef7748f4b/p/include -isystem /home/zb_bamboo/.conan2/p/cpp-hcf02b31b84347/p/include -isystem /home/zb_bamboo/.conan2/p/cpp-hcf02b31b84347/p/include/httplib -isystem /home/zb_bamboo/.conan2/p/b/opens53724d897cb7d/p/include
 
 CXX_FLAGS = -m64 -O3 -DNDEBUG -std=c++23
 

@@ -13,7 +13,7 @@ set(httplib_FIND_MODE "NO_MODULE")
 
 ########### VARIABLES #######################################################################
 #############################################################################################
-set(gh-update-checker_PACKAGE_FOLDER_RELEASE "/home/zb_bamboo/.conan2/p/b/gh-up1db8acfaff592/p")
+set(gh-update-checker_PACKAGE_FOLDER_RELEASE "/home/zb_bamboo/.conan2/p/b/gh-up61fbdb379553e/p")
 set(gh-update-checker_BUILD_MODULES_PATHS_RELEASE )
 
 

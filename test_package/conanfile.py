@@ -21,4 +21,4 @@ class GhUpdateCheckerTestConan(ConanFile):
 
     def test(self):
         if can_run(self):
-            self.run("gh-update-checker-test --help", env="conanrun")
+            self.run("./gh-update-checker-test --help", cwd=self.build_folder, env="conanrun")

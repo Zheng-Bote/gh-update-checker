@@ -145,9 +145,9 @@ list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 list(PREPEND CMAKE_PREFIX_PATH "/home/zb_bamboo/.conan2/p/b/opens53724d897cb7d/p/lib/cmake")
 # The Conan local "generators" folder, where this toolchain is saved.
 list(PREPEND CMAKE_PREFIX_PATH ${CMAKE_CURRENT_LIST_DIR} )
-list(PREPEND CMAKE_LIBRARY_PATH "/home/zb_bamboo/.conan2/p/b/gh-up1db8acfaff592/p/lib" "/home/zb_bamboo/.conan2/p/b/opens53724d897cb7d/p/lib" "/home/zb_bamboo/.conan2/p/b/zlibd8db2cf57aa8f/p/lib")
-list(PREPEND CMAKE_INCLUDE_PATH "/home/zb_bamboo/.conan2/p/b/gh-up1db8acfaff592/p/include" "/home/zb_bamboo/.conan2/p/nlohmd014ef7748f4b/p/include" "/home/zb_bamboo/.conan2/p/cpp-hcf02b31b84347/p/include" "/home/zb_bamboo/.conan2/p/cpp-hcf02b31b84347/p/include/httplib" "/home/zb_bamboo/.conan2/p/b/opens53724d897cb7d/p/include" "/home/zb_bamboo/.conan2/p/b/zlibd8db2cf57aa8f/p/include")
-set(CONAN_RUNTIME_LIB_DIRS "/home/zb_bamboo/.conan2/p/b/gh-up1db8acfaff592/p/lib" "/home/zb_bamboo/.conan2/p/b/opens53724d897cb7d/p/lib" "/home/zb_bamboo/.conan2/p/b/zlibd8db2cf57aa8f/p/lib" )
+list(PREPEND CMAKE_LIBRARY_PATH "/home/zb_bamboo/.conan2/p/b/gh-up61fbdb379553e/p/lib" "/home/zb_bamboo/.conan2/p/b/opens53724d897cb7d/p/lib" "/home/zb_bamboo/.conan2/p/b/zlibd8db2cf57aa8f/p/lib")
+list(PREPEND CMAKE_INCLUDE_PATH "/home/zb_bamboo/.conan2/p/b/gh-up61fbdb379553e/p/include" "/home/zb_bamboo/.conan2/p/nlohmd014ef7748f4b/p/include" "/home/zb_bamboo/.conan2/p/cpp-hcf02b31b84347/p/include" "/home/zb_bamboo/.conan2/p/cpp-hcf02b31b84347/p/include/httplib" "/home/zb_bamboo/.conan2/p/b/opens53724d897cb7d/p/include" "/home/zb_bamboo/.conan2/p/b/zlibd8db2cf57aa8f/p/include")
+set(CONAN_RUNTIME_LIB_DIRS "/home/zb_bamboo/.conan2/p/b/gh-up61fbdb379553e/p/lib" "/home/zb_bamboo/.conan2/p/b/opens53724d897cb7d/p/lib" "/home/zb_bamboo/.conan2/p/b/zlibd8db2cf57aa8f/p/lib" )
 
 endif()
 
