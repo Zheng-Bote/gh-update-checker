@@ -3,6 +3,6 @@
 include(CMakeFindDependencyMacro)
 
 find_dependency(nlohmann_json)
-find_dependency(CURL)
+find_dependency(httplib)
 
 include("${CMAKE_CURRENT_LIST_DIR}/gh_update_checkerTargets.cmake")

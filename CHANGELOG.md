@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**
 
+- [[Unreleased]](#unreleased)
+  - [Changed](#changed)
 - [[1.0.8] - 2026-04-06](#108---2026-04-06)
   - [Changed](#changed)
   - [Fixed](#fixed)
@@ -46,6 +48,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ---
+
+## [1.0.9] - 2026-04-25
+
+### Changed
+
+- Migrated dependency management from CMake `FetchContent`/system resolution to Conan v2 (`conanfile.py` + `CMakeDeps`/`CMakeToolchain`)
+- Added CMake presets for Conan-based Debug/Release configure, build, and test flows
+- Updated README build and troubleshooting instructions to the Conan v2 workflow
+- Replaced `libcurl` networking with Conan package `cpp-httplib/0.39.0` and switched CMake dependency resolution to `find_package(httplib)`
+- Moved the CLI sample from `cli/gh-update-checker.cpp` to `examples/gh-update-checker.cpp` and removed it from default CMake builds
 
 ## [1.0.8] - 2026-04-06
 

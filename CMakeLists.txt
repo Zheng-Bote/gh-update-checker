@@ -1,14 +1,8 @@
-cmake_minimum_required(VERSION 3.23)
-
-# cmake -B build -DCMAKE_INSTALL_PREFIX=/usr/local
-# cmake --build build
-# cmake --install build
-
-# gh-update-checker https://api.github.com/repos/nlohmann/json/releases/latest 3.11.2
+cmake_minimum_required(VERSION 3.31)
 
 project(gh_update_checker
-        VERSION 1.0.8
-        DESCRIPTION "CLI tool to check for GitHub release updates"
+        VERSION 1.0.9
+        DESCRIPTION "Header-only C++23 library to check GitHub release updates"
         HOMEPAGE_URL "https://github.com/Zheng-Bote/gh-update-checker"
         LANGUAGES CXX)
 
@@ -16,28 +10,14 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-include(FetchContent)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
 # ---------------------------------------------------------
-# Dependencies via FetchContent (NOT exported!)
+# Dependencies (resolved via Conan CMakeDeps or system packages)
 # ---------------------------------------------------------
-
-FetchContent_Declare(
-    nlohmann_json
-    GIT_REPOSITORY https://github.com/nlohmann/json.git
-    GIT_TAG v3.11.3
-)
-FetchContent_MakeAvailable(nlohmann_json)
-
-# ---------------------------------------------------------
-# System Dependencies
-# ---------------------------------------------------------
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-find_package(CURL 8.5 REQUIRED)
-message(STATUS "Found CURL version: ${CURL_VERSION_STRING}")
-message(STATUS "Using CURL version: ${CURL_VERSION}")
+find_package(nlohmann_json REQUIRED)
+find_package(httplib REQUIRED)
 
 # ---------------------------------------------------------
 # Header-only library
@@ -58,24 +38,7 @@ target_sources(gh_update_checker INTERFACE
 
 # IMPORTANT: do NOT link external targets here
 target_link_libraries(gh_update_checker INTERFACE
-    ${CURL_LIBRARIES}
-)
-
-# ---------------------------------------------------------
-# CLI tool
-# ---------------------------------------------------------
-
-add_executable(gh-update-checker cli/gh-update-checker.cpp)
-
-target_link_libraries(gh-update-checker
-    gh_update_checker
-    nlohmann_json::nlohmann_json
-    ${CURL_LIBRARIES}
-)
-
-install(
-    TARGETS gh-update-checker
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    httplib::httplib
 )
 
 # ---------------------------------------------------------
@@ -117,10 +80,9 @@ add_executable(test_basic tests/test_basic.cpp)
 target_link_libraries(test_basic
     gh_update_checker
     nlohmann_json::nlohmann_json
-    ${CURL_LIBRARIES}
 )
 
 add_test(NAME basic_update_check COMMAND test_basic)
 
-file(GENERATE OUTPUT "${CMAKE_BINARY_DIR}/libs.txt" 
-     CONTENT "$<TARGET_PROPERTY:gh-update-checker,LINK_LIBRARIES>")
+file(GENERATE OUTPUT "${CMAKE_BINARY_DIR}/${PROJECT_NAME}_libs.txt"
+     CONTENT "$<TARGET_PROPERTY:gh_update_checker,INTERFACE_LINK_LIBRARIES>")

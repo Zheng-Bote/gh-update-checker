@@ -1,4 +1,10 @@
-/*! 
+/**
+ * SPDX-FileComment: Main entry point
+ * SPDX-FileType: SOURCE
+ * SPDX-FileContributor: ZHENG Robert
+ * SPDX-FileCopyrightText: 2026 ZHENG Robert
+ * SPDX-License-Identifier: LGPL-3.0
+ *
  * @file check_gh-update.hpp
  * @brief GitHub release checker utility with semantic versioning support
  *
@@ -6,15 +12,17 @@
  * repository and compare it with a local version using semantic versioning (SemVer).
  * 
  * Features:
- *  - HTTP GET requests via libcurl
+ *  - HTTP GET requests via cpp-httplib
  *  - JSON parsing with nlohmann/json
  *  - Semantic versioning (SemVer) parsing and comparison
  *  - Automatic GitHub URL to API URL conversion
  *  - Synchronous and asynchronous version checking
  *  - Exception-based error handling for invalid inputs
  *
- * @author Your Team
- * @version 1.0.0
+ * @version 1.0.9
+ * @date 2026-02-25
+ * @author ZHENG Robert (robert@hase-zheng.net)
+ * @copyright Copyright (c) 2026 ZHENG Robert
  *
  * @example
  * ```cpp
@@ -26,11 +34,6 @@
  *     std::println("Update available: {}", result.latestVersion);
  * }
  * ```
- *
- * SPDX-FileType: SOURCE
- * SPDX-FileContributor: ZHENG Robert
- * SPDX-FileCopyrightText: 2026 ZHENG Robert
- * SPDX-License-Identifier: MIT
  */
 
 #pragma once
@@ -39,7 +42,7 @@
 #include <regex>
 #include <stdexcept>
 #include <future>
-#include <curl/curl.h>
+#include <httplib.h>
 #include <nlohmann/json.hpp>
 
 namespace ghupdate {
@@ -102,59 +105,56 @@ struct SemVer {
 };
 
 // ---------------------------------------------------------
-// HTTP GET via curl
+// HTTP GET via cpp-httplib
 // ---------------------------------------------------------
-
-/*!
- * @brief CURL write callback for HTTP response buffering
- *
- * Internal callback function used by libcurl to append received data
- * to a string buffer during HTTP GET requests.
- *
- * @param contents Pointer to received data
- * @param size Size of each element
- * @param nmemb Number of elements
- * @param userp User pointer (std::string* to accumulate data)
- * @return Total bytes written
- *
- * @note This is an internal implementation detail for use with curl_easy_setopt
- */
-static size_t write_callback(void* contents, size_t size, size_t nmemb, void* userp) {
-    size_t total = size * nmemb;
-    static_cast<std::string*>(userp)->append((char*)contents, total);
-    return total;
-}
 
 /*!
  * @brief Performs an HTTP GET request
  *
- * Sends an HTTP GET request to the specified URL using libcurl
+ * Sends an HTTP GET request to the specified URL using cpp-httplib
  * and returns the response body as a string.
  *
  * @param url The URL to request (std::string_view)
  * @return Response body as std::string
- * @throws std::runtime_error on curl initialization failure or network error
+ * @throws std::runtime_error on invalid URL, transport, or HTTP status errors
  *
  * @note Sets User-Agent header to "C++23-gh-update-checker"
  */
 inline std::string http_get(std::string_view url) {
-    CURL* curl = curl_easy_init();
-    if (!curl) throw std::runtime_error("curl init failed");
+    static const std::regex url_re(R"(https://([^/]+)(/.*)?)");
+    std::cmatch match;
+    if (!std::regex_match(url.begin(), url.end(), match, url_re)) {
+        throw std::runtime_error("Only https:// URLs are supported: " + std::string(url));
+    }
 
-    std::string buffer;
+    const std::string host = match[1].str();
+    const std::string path = match[2].matched ? match[2].str() : "/";
 
-    curl_easy_setopt(curl, CURLOPT_URL, url.data());
-    curl_easy_setopt(curl, CURLOPT_USERAGENT, "C++23-gh-update-checker");
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
+    #ifdef CPPHTTPLIB_OPENSSL_SUPPORT
+    httplib::SSLClient client(host);
+    client.set_follow_location(true);
+    client.set_connection_timeout(10, 0);
+    client.set_read_timeout(30, 0);
+    client.set_write_timeout(30, 0);
 
-    CURLcode res = curl_easy_perform(curl);
-    curl_easy_cleanup(curl);
+    httplib::Headers headers{
+        {"User-Agent", "C++23-gh-update-checker"},
+        {"Accept", "application/vnd.github+json"}
+    };
 
-    if (res != CURLE_OK)
+    const auto response = client.Get(path, headers);
+    if (!response) {
         throw std::runtime_error("HTTP request failed");
+    }
 
-    return buffer;
+    if (response->status < 200 || response->status >= 300) {
+        throw std::runtime_error("GitHub API returned HTTP status " + std::to_string(response->status));
+    }
+
+    return response->body;
+    #else
+    throw std::runtime_error("cpp-httplib was built without OpenSSL support (HTTPS required)");
+    #endif
 }
 
 // ---------------------------------------------------------

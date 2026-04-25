@@ -1,7 +1,7 @@
 <div id="top" align="center">
 <h1>gh-update-checker</h1>
 
-<p>A modern C++23 library and CLI tool to check for the latest releases of GitHub repositories using semantic versioning (SemVer).</p>
+<p>A modern C++23 header-only library to check for the latest releases of GitHub repositories using semantic versioning (SemVer).</p>
 
 ![License: LGPL-3](https://img.shields.io/badge/LGPL-3.0-lightgrey)
 [![CLA assistant](https://cla-assistant.io/readme/badge/Zheng-Bote/gh-update-checker)](https://cla-assistant.io/Zheng-Bote/gh-update-checker)
@@ -58,7 +58,7 @@
     - [Build Issues](#build-issues)
       - [CMake not found](#cmake-not-found)
       - [C++23 not supported](#c23-not-supported)
-      - [libcurl or nlohmann/json not found](#libcurl-or-nlohmannjson-not-found)
+      - [cpp-httplib or nlohmann/json not found](#cpp-httplib-or-nlohmannjson-not-found)
     - [Runtime Issues](#runtime-issues)
       - [Network timeouts](#network-timeouts)
       - [Invalid version format](#invalid-version-format)
@@ -87,13 +87,14 @@
 
 [![C++23](https://img.shields.io/badge/C%2B%2B-23-blue.svg)]()
 [![CMake](https://img.shields.io/badge/CMake-3.23+-blue.svg)]()
+[![Conan](https://img.shields.io/badge/Conan-2.x-blue.svg)]()
 
 **gh-update-checker** provides an efficient way to check if a newer version of a GitHub repository release is available. It automatically handles:
 
 - GitHub URL normalization (converts standard GitHub URLs to API endpoints)
 - Semantic versioning parsing and comparison
 - JSON response parsing via `nlohmann/json`
-- HTTP requests via `libcurl`
+- HTTP requests via `cpp-httplib`
 - Both synchronous and asynchronous update checking
 
 Perfect for:
@@ -137,13 +138,12 @@ Perfect for:
   - Clang 17+
   - MSVC 2022+ with `/std:c++latest`
 - **CMake** 3.23 or later
-- **libcurl** (fetched automatically or use system package)
-- **nlohmann/json** (fetched automatically or use system package)
+- **Conan** 2.x
 
 ### Runtime Requirements
 
 - Network connectivity for GitHub API calls
-- HTTPS support in libcurl
+- HTTPS support via `cpp-httplib` (OpenSSL backend)
 
 ## Installation
 
@@ -153,14 +153,15 @@ Perfect for:
 
 ```bash
 # Ubuntu/Debian
-sudo apt-get install cmake build-essential git libpsl-dev libidn2-dev libnghttp2-dev libbrotli-dev
+sudo apt-get install cmake ninja-build build-essential git python3-pip
+pipx install conan || pip install --user conan
 
 # macOS (Homebrew)
-brew install cmake
+brew install cmake ninja conan
 
 # Windows
-# Use Visual Studio 2022 or install via chocolatey
-choco install cmake visualstudio2022community
+# Use Visual Studio 2022 and install Conan
+choco install cmake ninja visualstudio2022community conan
 ```
 
 #### Clone and Build
@@ -170,49 +171,42 @@ choco install cmake visualstudio2022community
 git clone https://github.com/Zheng-Bote/gh-update-checker.git
 cd gh-update-checker
 
-# Create build directory
-mkdir build
-cd build
+# Install Conan dependencies (Release)
+conan profile detect --force
+conan install . --build=missing -s build_type=Release
 
-# Configure CMake (optional: set custom installation path)
-cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
+# Configure with CMake preset
+cmake --preset conan-release
 
 # Build the project
-cmake --build .
+cmake --build --preset conan-release
 
 # Optionally run tests
-ctest --output-on-failure
+ctest --preset conan-release
 ```
 
 #### Install
 
 ```bash
 # Install to system
-sudo cmake --install .
+sudo cmake --install build/Release
 
 # Or install to custom location
-cmake --install . --prefix ~/local
+cmake --install build/Release --prefix ~/local
 ```
 
 ### Option 2: Using as a Header-Only Library in CMakeLists.txt
 
 ```cmake
-include(FetchContent)
-
-FetchContent_Declare(
-    gh_update_checker
-    GIT_REPOSITORY https://github.com/Zheng-Bote/gh-update-checker.git
-    GIT_TAG v1.0.0
-)
-FetchContent_MakeAvailable(gh_update_checker)
+find_package(gh_update_checker REQUIRED)
 
 # In your target
-target_link_libraries(my_target PRIVATE gh_update_checker)
+target_link_libraries(my_target PRIVATE gh_update_checker::gh_update_checker)
 ```
 
 ## Usage
 
-### Command-Line Interface
+### Command-Line Interface (Example Only, Not Built by Default)
 
 #### Basic Usage
 
@@ -354,17 +348,8 @@ project(MyProject LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 
-# Add gh-update-checker (via find_package if installed, or FetchContent)
+# Add gh-update-checker (via find_package if installed)
 find_package(gh_update_checker REQUIRED)
-
-# Or use FetchContent
-include(FetchContent)
-FetchContent_Declare(
-    gh_update_checker
-    GIT_REPOSITORY https://github.com/Zheng-Bote/gh-update-checker.git
-    GIT_TAG v1.0.0
-)
-FetchContent_MakeAvailable(gh_update_checker)
 
 # Link to your target
 add_executable(my_app main.cpp)
@@ -376,37 +361,35 @@ target_link_libraries(my_app PRIVATE gh_update_checker::gh_update_checker)
 ### Build Options
 
 ```bash
-cd build
+conan install . --build=missing -s build_type=Release
+cmake --preset conan-release
 
 # Standard release build
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..
-cmake --build .
+cmake --build --preset conan-release
 
 # Debug build with symbols
-cmake -DCMAKE_BUILD_TYPE=Debug ..
-cmake --build .
+conan install . --build=missing -s build_type=Debug
+cmake --preset conan-debug
+cmake --build --preset conan-debug
 
 # Verbose build output
-cmake --build . --verbose
+cmake --build --preset conan-release --verbose
 ```
 
 ### Running Tests
 
 ```bash
-# From the build directory
-cd build
-
 # Run all tests
-ctest
+ctest --preset conan-release
 
 # Run with verbose output
-ctest --output-on-failure
+ctest --preset conan-release --output-on-failure
 
 # Run specific test
-ctest -R test_basic -V
+ctest --test-dir build/Release -R test_basic -V
 
 # Or using the test executable directly
-./test_basic
+./build/Release/test_basic
 ```
 
 ### Test Coverage
@@ -427,9 +410,9 @@ Test the check_github_update() function with:
 Run the test suite after building:
 
 ```bash
-make test
+ctest --preset conan-release
 # or
-ctest --output-on-failure
+ctest --test-dir build/Release --output-on-failure
 ```
 
 ## Development
@@ -442,8 +425,8 @@ gh-update-checker/
 │   └── check_gh-update.hpp      # Main header-only library
 ├── src/                          # Source files (if any)
 │   └── (currently using header-only pattern)
-├── cli/
-│   └── gh-update-checker.cpp     # CLI application
+├── examples/
+│   └── gh-update-checker.cpp     # Example CLI (not built by default)
 ├── tests/
 │   └── test_basic.cpp            # Basic integration tests
 ├── cmake/
@@ -457,22 +440,25 @@ gh-update-checker/
 #### GCC
 
 ```bash
-cmake -DCMAKE_CXX_COMPILER=g++ ..
-cmake --build .
+conan install . --build=missing -s build_type=Release
+cmake --preset conan-release -DCMAKE_CXX_COMPILER=g++
+cmake --build --preset conan-release
 ```
 
 #### Clang
 
 ```bash
-cmake -DCMAKE_CXX_COMPILER=clang++ ..
-cmake --build .
+conan install . --build=missing -s build_type=Release
+cmake --preset conan-release -DCMAKE_CXX_COMPILER=clang++
+cmake --build --preset conan-release
 ```
 
 #### MSVC (Windows)
 
 ```bash
-cmake -G "Visual Studio 17 2022" ..
-cmake --build . --config Release
+conan install . --build=missing -s build_type=Release
+cmake --preset conan-release
+cmake --build --preset conan-release
 ```
 
 ### Code Style and Standards
@@ -517,7 +503,7 @@ try {
 ## Performance Considerations
 
 - **String Views**: Minimize copies with `std::string_view` parameters
-- **Network Timeouts**: Default libcurl timeout is system-dependent; consider setting `CURLOPT_TIMEOUT` for production
+- **Network Timeouts**: `cpp-httplib` connection/read/write timeouts are configured in `http_get()`
 - **Async Operations**: Use `check_github_update_async()` for non-blocking calls
 - **Memory**: Asynchronous checks use `std::async` which spawns lightweight threads on most systems
 
@@ -541,16 +527,13 @@ Ensure your compiler is updated:
 - G++: 14 or later
 - Clang: 17 or later
 
-#### libcurl or nlohmann/json not found
+#### cpp-httplib or nlohmann/json not found
 
-These are fetched automatically by CMake. If offline, install manually:
+Install dependencies with Conan before configuring CMake:
 
 ```bash
-# Ubuntu
-sudo apt-get install libcurl4-openssl-dev nlohmann-json3-dev
-
-# macOS
-brew install curl nlohmann-json
+conan profile detect --force
+conan install . --build=missing -s build_type=Release
 ```
 
 ### Runtime Issues
@@ -577,15 +560,15 @@ GitHub API has rate limits. For authenticated requests, set an OAuth token:
 
 ## Dependencies
 
-### External (Auto-fetched)
+### External (Conan-managed)
 
 - **nlohmann/json** v3.11.3 - JSON parsing
+- **cpp-httplib** v0.39.0 - HTTP requests
 
 ### System
 
-- **libcurl** v8.19.0+ - HTTP requests (via `find_package`)
 - Standard C++ Library (C++23)
-- System SSL/TLS for HTTPS support
+- System SSL/TLS runtime libraries as required by `cpp-httplib` OpenSSL support
 
 ## License
 
