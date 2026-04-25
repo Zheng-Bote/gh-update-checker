@@ -1,0 +1,50 @@
+{
+  "bomFormat": "CycloneDX",
+  "components": [
+    {
+      "bom-ref": "pkg:generic/gh_update_checker@unknown",
+      "licenses": [
+        {
+          "license": {
+            "name": "UNKNOWN"
+          }
+        }
+      ],
+      "name": "gh_update_checker",
+      "purl": "pkg:generic/gh_update_checker@unknown",
+      "type": "library",
+      "version": "unknown"
+    },
+    {
+      "bom-ref": "pkg:generic/nlohmann_json::nlohmann_json@v3.11.3",
+      "licenses": [
+        {
+          "license": {
+            "name": "UNKNOWN"
+          }
+        }
+      ],
+      "name": "nlohmann_json::nlohmann_json",
+      "purl": "pkg:generic/nlohmann_json::nlohmann_json@v3.11.3",
+      "type": "library",
+      "version": "v3.11.3"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "name": "\"gh-update-checker\"",
+      "type": "application"
+    },
+    "timestamp": "2026-04-25T07:34:56Z",
+    "tools": [
+      {
+        "name": "depdiscover",
+        "vendor": "ZHENG Bote",
+        "version": "1.5.0"
+      }
+    ]
+  },
+  "serialNumber": "urn:uuid:1c9d3262-f17a-4ee7-acdf-530f5263d55d",
+  "specVersion": "1.4",
+  "version": 1
+}
