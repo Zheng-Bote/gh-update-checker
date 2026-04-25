@@ -1,3 +1,11 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**
+
+- [SBOM Security Report: "gh-update-checker"](#sbom-security-report-gh-update-checker)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # SBOM Security Report: "gh-update-checker"
 
 - **Scan Date:** 2026-04-19
