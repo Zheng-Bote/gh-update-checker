@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
         std::cerr << "Usage: gh-update-checker <repo-api-url> <local-version>\n";
         std::cerr << "Example:\n";
         std::cerr << "  gh-update-checker "
-                     "https://api.github.com/repos/nlohmann/json/releases/latest 3.11.2\n";
+                     "https://api.github.com/repos/zheng-bote/gh-update-checker/releases/latest v1.0.8\n";
         return 1;
     }
 

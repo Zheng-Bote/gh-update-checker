@@ -4,14 +4,23 @@ from conan.tools.cmake import CMake, CMakeDeps, CMakeToolchain, cmake_layout
 
 class GhUpdateCheckerConan(ConanFile):
     name = "gh-update-checker"
-    version = "1.0.8"
-    package_type = "application"
+    version = "1.0.9"
+    package_type = "header-library"
+    exports_sources = (
+        "CMakeLists.txt",
+        "cmake/*",
+        "include/*",
+        "tests/*",
+        "examples/*",
+        "LICENSE",
+        "README.md",
+    )
 
     settings = "os", "compiler", "build_type", "arch"
 
     requires = (
-        "nlohmann_json/[>=3.12.0]",
-        "cpp-httplib/[>=0.39.0]",
+        "nlohmann_json/[>=3.12.0 <4]",
+        "cpp-httplib/[>=0.39.0 <1]",
     )
 
     default_options = {
@@ -36,3 +45,11 @@ class GhUpdateCheckerConan(ConanFile):
         cmake = CMake(self)
         cmake.configure()
         cmake.build()
+
+    def package(self):
+        cmake = CMake(self)
+        cmake.install()
+
+    def package_info(self):
+        self.cpp_info.set_property("cmake_file_name", "gh_update_checker")
+        self.cpp_info.set_property("cmake_target_name", "gh_update_checker::gh_update_checker")

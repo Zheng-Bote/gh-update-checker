@@ -1,0 +1,3 @@
+/home/zb_bamboo/DEV/__NEW__/CPP/GH_update-checker/gh-update-checker/test_package/build/gcc-15-x86_64-23-release/CMakeFiles/gh-update-checker-test.dir
+/home/zb_bamboo/DEV/__NEW__/CPP/GH_update-checker/gh-update-checker/test_package/build/gcc-15-x86_64-23-release/CMakeFiles/edit_cache.dir
+/home/zb_bamboo/DEV/__NEW__/CPP/GH_update-checker/gh-update-checker/test_package/build/gcc-15-x86_64-23-release/CMakeFiles/rebuild_cache.dir
