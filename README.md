@@ -1,12 +1,16 @@
-# gh-update-checker
+<div id="top" align="center">
+<h1>gh-update-checker</h1>
 
-A modern C++23 library and CLI tool to check for the latest releases of GitHub repositories using semantic versioning (SemVer).
+<p>A modern C++23 library and CLI tool to check for the latest releases of GitHub repositories using semantic versioning (SemVer).</p>
 
-![License: LGPL-3](https://img.shields.io/badge/LGPL-3.0-lightyellow)
+![License: LGPL-3](https://img.shields.io/badge/LGPL-3.0-lightgrey)
 [![CLA assistant](https://cla-assistant.io/readme/badge/Zheng-Bote/gh-update-checker)](https://cla-assistant.io/Zheng-Bote/gh-update-checker)
+![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20Windows%20%7C%20macOS-lightgrey.svg)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/Zheng-Bote/gh-update-checker?logo=GitHub)](https://github.com/Zheng-Bote/gh-update-checker/releases)
 
 [Report Issue](https://github.com/Zheng-Bote/gh-update-checker/issues) · [Request Feature](https://github.com/Zheng-Bote/gh-update-checker/pulls)
+
+</div>
 
 ---
 
@@ -690,3 +694,5 @@ Copyright (c) 2026 ZHENG Robert
 ---
 
 **Happy checking! 🚀** :vulcan_salute:
+
+<p align="right">(<a href="#top">back to top</a>)</p>
