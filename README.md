@@ -265,7 +265,7 @@ int main(int argc, char** argv) {
     if (argc < 3) {
         std::println("Usage: sync-check <repo-url|api-url> <local-version>");
         std::println("Example:");
-        std::println("  sync-check [github.com](https://github.com/nlohmann/json) 3.10.0");
+        std::println("  sync-check https://github.com/nlohmann/json 3.10.0");
         std::exit(0);
     }
 
@@ -302,7 +302,7 @@ int main(int argc, char** argv) {
     if (argc < 3) {
         std::println("Usage: async-check <repo-url|api-url> <local-version>");
         std::println("Example:");
-        std::println("  async-check [github.com](https://github.com/nlohmann/json) 3.10.0");
+        std::println("  async-check https://github.com/nlohmann/json 3.10.0");
         std::exit(0);
     }
 

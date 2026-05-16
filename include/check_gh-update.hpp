@@ -19,7 +19,7 @@
  *  - Synchronous and asynchronous version checking
  *  - Exception-based error handling for invalid inputs
  *
- * @version 1.1.0
+ * @version 1.1.1
  * @date 2026-05-16
  * @author ZHENG Robert (robert@hase-zheng.net)
  * @copyright Copyright (c) 2026 ZHENG Robert
@@ -142,7 +142,7 @@ inline std::string to_github_api_url(std::string_view url) {
         return std::string(url);
 
     static const std::regex re(
-        R"([github](https://github\.com/()[^/]+)/([^/?#]+))"
+        R"(https://github\.com/([^/]+)/([^/?#]+))"
     );
 
     std::string s(url);
@@ -152,13 +152,13 @@ inline std::string to_github_api_url(std::string_view url) {
         throw std::runtime_error("Invalid GitHub repository URL: " + std::string(url));
     }
 
-    std::string owner = m[1];
-    std::string repo  = m[2];
+    std::string owner = m[1].str();
+    std::string repo  = m[2].str();
 
     if (repo.ends_with(".git"))
         repo.erase(repo.size() - 4);
 
-    return "[api.github.com](https://api.github.com/repos/)" + owner + "/" + repo + "/releases/latest";
+    return "https://api.github.com/repos/" + owner + "/" + repo + "/releases/latest";
 }
 
 

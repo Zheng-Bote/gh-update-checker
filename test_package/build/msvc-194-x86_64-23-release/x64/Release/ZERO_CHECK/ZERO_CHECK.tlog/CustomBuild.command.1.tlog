@@ -1,0 +1,10 @@
+^D:\ZB_BA\DEV\CXX\GH-UPDATE-CHECKER\TEST_PACKAGE\BUILD\MSVC-194-X86_64-23-RELEASE\CMAKEFILES\7F2B28F904AA047AD06EC3C028451C89\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/zb_ba/Dev/CXX/gh-update-checker/test_package -BD:/zb_ba/Dev/CXX/gh-update-checker/test_package/build/msvc-194-x86_64-23-release --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file D:/zb_ba/Dev/CXX/gh-update-checker/test_package/build/msvc-194-x86_64-23-release/gh_update_checker_test_package.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

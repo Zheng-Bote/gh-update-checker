@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.31)
 
 project(gh_update_checker
-        VERSION 1.0.9
+        VERSION 1.1.1
         DESCRIPTION "Header-only C++23 library to check GitHub release updates"
         HOMEPAGE_URL "https://github.com/Zheng-Bote/gh-update-checker"
         LANGUAGES CXX)

@@ -12,10 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Table of Contents**
 
 - [Changelog](#changelog)
-  - [\[1.1.0\] - 2026-05-16](#110---2026-05-16)
-    - [Added](#added)
-    - [Changed](#changed)
+  - [\[1.1.1\] - 2026-05-16](#111---2026-05-16)
     - [Fixed](#fixed)
+  - [\[1.1.0\] - 2026-05-16](#110---2026-05-16)
   - [\[1.0.9\] - 2026-04-25](#109---2026-04-25)
     - [Changed](#changed-1)
   - [\[1.0.8\] - 2026-04-06](#108---2026-04-06)
@@ -53,6 +52,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ---
+
+## [1.1.1] - 2026-05-16
+### Fixed
+- Fixed corrupted GitHub URL normalization logic where markdown-style artifacts (e.g., `[github](...)`) were present in the regex and string literals.
+- Corrected API URL construction to use standard HTTPS protocol instead of broken markdown-like strings.
 
 ## [1.1.0] - 2026-05-16
 ### Added

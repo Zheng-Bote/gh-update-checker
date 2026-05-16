@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <ProjectOutputs>
+    <ProjectOutput>
+      <FullPath>D:\zb_ba\Dev\CXX\gh-update-checker\test_package\build\msvc-194-x86_64-23-release\x64\Release\ZERO_CHECK</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\zb_ba\Dev\CXX\gh-update-checker\test_package\build\msvc-194-x86_64-23-release\Release\gh-update-checker-test.exe</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\zb_ba\Dev\CXX\gh-update-checker\test_package\build\msvc-194-x86_64-23-release\x64\Release\ALL_BUILD</FullPath>
+    </ProjectOutput>
+  </ProjectOutputs>
+  <ContentFiles />
+  <SatelliteDlls />
+  <NonRecipeFileRefs />
+</Project>

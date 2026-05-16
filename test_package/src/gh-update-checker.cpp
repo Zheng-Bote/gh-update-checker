@@ -1,37 +1,41 @@
 /*!
  * @file gh-update-checker.cpp
- * @brief Example CLI for GitHub release update checker library
- *
- * This file is intentionally placed under examples/ and is not part of the
- * default build. It demonstrates how to call the library from a command-line
- * executable.
+ * @brief Example CLI for GitHub release update checker library (C++23 optimized)
  */
 
-#include <iostream>
+#include <print>
+#include <string_view>
 #include <string>
+#include <cstdlib>
 
 #include <check_gh-update.hpp>
 
 int main(int argc, char** argv) {
     if (argc < 3) {
-        std::cerr << "Usage: gh-update-checker <repo-api-url> <local-version>\n";
-        std::cerr << "Example:\n";
-        std::cerr << "  gh-update-checker "
-                     "https://api.github.com/repos/zheng-bote/gh-update-checker/releases/latest v1.0.8\n";
-        return 0;
+        std::println("Usage: gh-update-checker <repo-url|api-url> <local-version>");
+        std::println("Example:");
+        std::println("  gh-update-checker [github.com](https://github.com/zheng-bote/gh-update-checker) v1.0.8\n");
+        std::println("Note: You may pass a normal GitHub URL or a GitHub API URL.");
+        std::exit(0);
     }
 
-    std::string repo = argv[1];
-    std::string local = argv[2];
+    std::string_view repoUrl{argv[1]};
+    std::string_view localVersion{argv[2]};
 
     try {
-        auto info = ghupdate::check_github_update(repo, local);
-        std::cout << "Local version:  " << local << "\n";
-        std::cout << "Remote version: " << info.latestVersion << "\n";
-        std::cout << "Update:         " << (info.hasUpdate ? "YES" : "NO") << "\n";
-        return info.hasUpdate ? 2 : 0;
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << "\n";
-        return 3;
+        const auto info = ghupdate::check_github_update(repoUrl, localVersion);
+
+        std::println("Local version:   {}", localVersion);
+        std::println("Remote version:  {}", info.latestVersion);
+        std::println("Update needed:   {}", info.hasUpdate ? "YES" : "NO");
+
+        // Exit codes:
+        //   0 → no update
+        //   2 → update available
+        std::exit(info.hasUpdate ? 2 : 0);
+
+    } catch (const std::exception &e) {
+        std::println(stderr, "Error: {}", e.what());
+        std::exit(3);
     }
 }
