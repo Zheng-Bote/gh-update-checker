@@ -11,43 +11,69 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**
 
-- [[1.0.9] - 2026-04-25](#109---2026-04-25)
-  - [Changed](#changed)
-- [[1.0.8] - 2026-04-06](#108---2026-04-06)
-  - [Changed](#changed-1)
-  - [Fixed](#fixed)
-- [[1.0.7] - 2026-04-06](#107---2026-04-06)
-  - [Added](#added)
-  - [Changed](#changed-2)
-  - [Fixed](#fixed-1)
-- [[1.0.4] - 2026-02-09](#104---2026-02-09)
-  - [Fixed](#fixed-2)
-  - [Changed](#changed-3)
-  - [Added](#added-1)
-- [[1.0.5] - 2026-02-09](#105---2026-02-09)
-  - [Fixed](#fixed-3)
-  - [Changed](#changed-4)
-  - [Added](#added-2)
-- [[1.0.1] - 2026-02-10](#101---2026-02-10)
-  - [Fixed](#fixed-4)
-  - [Changed](#changed-5)
-  - [Added](#added-3)
-- [[1.0.0] - 2026-02-09](#100---2026-02-09)
-  - [Added](#added-4)
-  - [Documentation](#documentation)
-  - [Testing](#testing)
-  - [Build & Packaging](#build--packaging)
-  - [Known Limitations](#known-limitations)
-  - [Dependencies](#dependencies)
-  - [Contributors](#contributors)
-- [Versioning Strategy](#versioning-strategy)
-- [Release Process](#release-process)
-- [Links](#links)
-  - [Format Guide](#format-guide)
+- [Changelog](#changelog)
+  - [\[1.1.0\] - 2026-05-16](#110---2026-05-16)
+    - [Added](#added)
+    - [Changed](#changed)
+    - [Fixed](#fixed)
+  - [\[1.0.9\] - 2026-04-25](#109---2026-04-25)
+    - [Changed](#changed-1)
+  - [\[1.0.8\] - 2026-04-06](#108---2026-04-06)
+    - [Changed](#changed-2)
+    - [Fixed](#fixed-1)
+  - [\[1.0.7\] - 2026-04-06](#107---2026-04-06)
+    - [Added](#added-1)
+    - [Changed](#changed-3)
+    - [Fixed](#fixed-2)
+  - [\[1.0.4\] - 2026-02-09](#104---2026-02-09)
+    - [Fixed](#fixed-3)
+    - [Changed](#changed-4)
+    - [Added](#added-2)
+  - [\[1.0.5\] - 2026-02-09](#105---2026-02-09)
+    - [Fixed](#fixed-4)
+    - [Changed](#changed-5)
+    - [Added](#added-3)
+  - [\[1.0.1\] - 2026-02-10](#101---2026-02-10)
+    - [Fixed](#fixed-5)
+    - [Changed](#changed-6)
+    - [Added](#added-4)
+  - [\[1.0.0\] - 2026-02-09](#100---2026-02-09)
+    - [Added](#added-5)
+    - [Documentation](#documentation)
+    - [Testing](#testing)
+    - [Build \& Packaging](#build--packaging)
+    - [Known Limitations](#known-limitations)
+    - [Dependencies](#dependencies)
+    - [Contributors](#contributors)
+  - [Versioning Strategy](#versioning-strategy)
+  - [Release Process](#release-process)
+  - [Links](#links)
+    - [Format Guide](#format-guide)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ---
+
+## [1.1.0] - 2026-05-16
+### Added
+- New fully refactored header-only implementation with improved cross-compiler compatibility (MSVC, Clang, GCC)
+- Added synchronous and asynchronous example CLI programs (C++23 `std::println` based)
+- Added optional installation of example CLI via CMake option `GH_UPDATE_CHECKER_BUILD_EXAMPLES`
+- Added comprehensive MSVC compatibility fixes for `std::regex`, `string_view`, and cpp-httplib behavior
+- Added updated example usage (sync + async) in documentation
+### Changed
+- Replaced fragile `regex_search`/iterator-based parsing with MSVC-safe `std::string` + `std::regex_match`
+- Improved GitHub URL resolution and SemVer parsing robustness
+- Simplified HTTP error reporting for older cpp-httplib releases (removed unsupported `get_last_error()` call)
+- Improved CMake project structure with clean install/export behavior
+- Enhanced CMake package config (`gh_update_checkerConfig.cmake`) for downstream `find_package()` use
+- Updated CLI to more idiomatic C++23 (string_view, std::println, clean exit handling)
+### Fixed
+- Fixed major MSVC compilation issues related to `std::regex_match` overload resolution
+- Fixed incorrect handling of `.git` suffix in GitHub URLs
+- Fixed false negatives in SemVer matching under Windows builds
+- Fixed build failure of example CLI not being included in root CMake project
+- Fixed Conan-based builds under Windows with OpenSSL-enabled httplib
 
 ## [1.0.9] - 2026-04-25
 
