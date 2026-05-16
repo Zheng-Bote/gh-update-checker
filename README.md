@@ -255,62 +255,78 @@ fi
 #### Synchronous Update Check
 
 ```cpp
+#include <print>
+#include <string_view>
+#include <cstdlib>
+
 #include <check_gh-update.hpp>
-#include <iostream>
 
-int main() {
-    try {
-        // Check using GitHub repository URL
-        auto result = ghupdate::check_github_update(
-            "https://github.com/nlohmann/json",
-            "3.11.2"
-        );
-
-        std::cout << "Remote version: " << result.latestVersion << "\n";
-
-        if (result.hasUpdate) {
-            std::cout << "Update available!\n";
-        } else {
-            std::cout << "You are running the latest version.\n";
-        }
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << "\n";
-        return 1;
+int main(int argc, char** argv) {
+    if (argc < 3) {
+        std::println("Usage: sync-check <repo-url|api-url> <local-version>");
+        std::println("Example:");
+        std::println("  sync-check [github.com](https://github.com/nlohmann/json) 3.10.0");
+        std::exit(0);
     }
-    return 0;
+
+    std::string_view repo = argv[1];
+    std::string_view local = argv[2];
+
+    try {
+        auto info = ghupdate::check_github_update(repo, local);
+
+        std::println("Local version:   {}", local);
+        std::println("Remote version:  {}", info.latestVersion);
+        std::println("Update needed:   {}", info.hasUpdate ? "YES" : "NO");
+
+        std::exit(info.hasUpdate ? 2 : 0);
+
+    } catch (const std::exception& e) {
+        std::println(stderr, "Error: {}", e.what());
+        std::exit(3);
+    }
 }
 ```
 
 #### Asynchronous Update Check
 
 ```cpp
+#include <print>
+#include <string_view>
+#include <future>
+#include <cstdlib>
+
 #include <check_gh-update.hpp>
-#include <iostream>
 
-int main() {
-    try {
-        // Start async check
-        auto future = ghupdate::check_github_update_async(
-            "https://github.com/nlohmann/json",
-            "3.11.2"
-        );
-
-        // Do other work while request is in progress
-        std::cout << "Checking for updates...\n";
-
-        // Wait for result (blocking)
-        auto result = future.get();
-
-        std::cout << "Latest version: " << result.latestVersion << "\n";
-
-        if (result.hasUpdate) {
-            std::cout << "Update available!\n";
-        }
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << "\n";
-        return 1;
+int main(int argc, char** argv) {
+    if (argc < 3) {
+        std::println("Usage: async-check <repo-url|api-url> <local-version>");
+        std::println("Example:");
+        std::println("  async-check [github.com](https://github.com/nlohmann/json) 3.10.0");
+        std::exit(0);
     }
-    return 0;
+
+    std::string repo = argv[1];      // async-Funktion nimmt Kopien
+    std::string local = argv[2];
+
+    try {
+        auto future = ghupdate::check_github_update_async(repo, local);
+
+        std::println("Checking for updates asynchronously...");
+        // Hier könnte andere Arbeit erledigt werden
+
+        auto info = future.get(); // blockiert bis Ergebnis da ist
+
+        std::println("Local version:   {}", local);
+        std::println("Remote version:  {}", info.latestVersion);
+        std::println("Update needed:   {}", info.hasUpdate ? "YES" : "NO");
+
+        std::exit(info.hasUpdate ? 2 : 0);
+
+    } catch (const std::exception& e) {
+        std::println(stderr, "Error: {}", e.what());
+        std::exit(3);
+    }
 }
 ```
 
