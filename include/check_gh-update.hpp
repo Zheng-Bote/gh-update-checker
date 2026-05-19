@@ -19,8 +19,9 @@
  *  - Synchronous and asynchronous version checking
  *  - Exception-based error handling for invalid inputs
  *
- * @version 1.1.1
- * @date 2026-05-16
+ * @version 1.2.0
+ * @date 2026-05-19
+
  * @author ZHENG Robert (robert@hase-zheng.net)
  * @copyright Copyright (c) 2026 ZHENG Robert
  *
@@ -42,6 +43,7 @@
 #include <regex>
 #include <stdexcept>
 #include <future>
+#include <optional>
 
 #include <httplib.h>
 #include <nlohmann/json.hpp>
@@ -49,8 +51,46 @@
 namespace ghupdate {
 
 // ---------------------------------------------------------
+// Proxy
+// ---------------------------------------------------------
+
+/**
+ * @brief Proxy configuration
+ * 
+ * Supports format: user:password@host:port
+ */
+struct Proxy {
+    std::string host;
+    int port = 0;
+    std::string user;
+    std::string password;
+
+    /**
+     * @brief Parse proxy string in format user:password@host:port
+     * @param proxyStr The proxy string to parse
+     * @return Proxy object
+     * @throws std::runtime_error if format is invalid
+     */
+    static Proxy parse(std::string_view proxyStr) {
+        static const std::regex re(R"(^([^:]+):(.*)@(.+):(\d+)$)");
+        std::string s(proxyStr);
+        std::smatch m;
+        if (!std::regex_match(s, m, re)) {
+            throw std::runtime_error("Invalid proxy format. Expected user:password@host:port");
+        }
+        Proxy p;
+        p.user = m[1].str();
+        p.password = m[2].str();
+        p.host = m[3].str();
+        p.port = std::stoi(m[4].str());
+        return p;
+    }
+};
+
+// ---------------------------------------------------------
 // SemVer
 // ---------------------------------------------------------
+// ... rest of file (I'll provide the whole file or at least the relevant parts)
 
 struct SemVer {
     int major = 0;
@@ -81,7 +121,7 @@ struct SemVer {
 // HTTP GET via cpp-httplib
 // ---------------------------------------------------------
 
-inline std::string http_get(std::string_view url) {
+inline std::string http_get(std::string_view url, std::optional<std::string_view> proxy = std::nullopt) {
     static const std::regex url_re(R"(https://([^/]+)(/.*)?)");
 
     std::string s(url);
@@ -98,6 +138,13 @@ inline std::string http_get(std::string_view url) {
     throw std::runtime_error("cpp-httplib built without OpenSSL support (HTTPS required)");
 #else
     httplib::SSLClient client(host);
+
+    if (proxy) {
+        auto p = Proxy::parse(*proxy);
+        client.set_proxy(p.host, p.port);
+        client.set_proxy_basic_auth(p.user, p.password);
+    }
+
     client.set_follow_location(true);
     client.set_connection_timeout(10, 0);
     client.set_read_timeout(30, 0);
@@ -178,10 +225,11 @@ struct UpdateInfo {
 
 inline UpdateInfo check_github_update(
     std::string_view repoUrl,
-    std::string_view localVersion)
+    std::string_view localVersion,
+    std::optional<std::string_view> proxy = std::nullopt)
 {
     const std::string apiUrl = to_github_api_url(repoUrl);
-    const std::string body   = http_get(apiUrl);
+    const std::string body   = http_get(apiUrl, proxy);
 
     nlohmann::json json;
     try {
@@ -215,13 +263,15 @@ inline UpdateInfo check_github_update(
 
 inline std::future<UpdateInfo> check_github_update_async(
     std::string repoUrl,
-    std::string localVersion)
+    std::string localVersion,
+    std::optional<std::string> proxy = std::nullopt)
 {
     return std::async(
         std::launch::async | std::launch::deferred,
         [repoUrl = std::move(repoUrl),
-         localVersion = std::move(localVersion)] {
-            return check_github_update(repoUrl, localVersion);
+         localVersion = std::move(localVersion),
+         proxy = std::move(proxy)] {
+            return check_github_update(repoUrl, localVersion, proxy);
         }
     );
 }

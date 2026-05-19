@@ -1,1 +1,0 @@
-. "/home/zb_bamboo/DEV/__NEW__/CPP/GH_update-checker/gh-update-checker/test_package/build/gcc-15-x86_64-23-release/generators/conanrunenv-release-x86_64.sh"

@@ -113,6 +113,7 @@ Perfect for:
   - Accepts full GitHub URLs: `https://github.com/owner/repo`
   - Accepts GitHub API URLs: `https://api.github.com/repos/owner/repo/releases/latest`
   - Auto-converts standard URLs to API format
+  - **Optional Proxy Support** with authentication and special character handling
 
 - **Semantic Versioning Support**
   - Parse and compare versions: `1.2.3`, `v1.2.3`, `1.2`
@@ -176,7 +177,7 @@ conan install . --build=missing -s build_type=Release
 cmake --preset conan-release
 
 # Build the project
-cmake --build --preset conan-release
+cmake --build --preset conan-release -j 2
 
 # Optionally run tests
 ctest --preset conan-release

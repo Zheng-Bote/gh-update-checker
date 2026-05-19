@@ -75,6 +75,27 @@ void test_semver_comparison() {
 }
 
 /*!
+ * @brief Test 3: Proxy parsing
+ */
+void test_proxy_parsing() {
+    try {
+        auto p1 = ghupdate::Proxy::parse("user:pass@host:8080");
+        bool pass1 = (p1.user == "user" && p1.password == "pass" && p1.host == "host" && p1.port == 8080);
+
+        auto p2 = ghupdate::Proxy::parse("user:p@ss:w@rd@proxy.example.com:3128");
+        bool pass2 = (p2.user == "user" && p2.password == "p@ss:w@rd" && p2.host == "proxy.example.com" && p2.port == 3128);
+
+        auto p3 = ghupdate::Proxy::parse("complex!user:special#char@pass@my-proxy:1234");
+        bool pass3 = (p3.user == "complex!user" && p3.password == "special#char@pass" && p3.host == "my-proxy" && p3.port == 1234);
+
+        print_result("Proxy parsing", pass1 && pass2 && pass3);
+    } catch (const std::exception& e) {
+        std::cerr << "  Exception: " << e.what() << "\n";
+        print_result("Proxy parsing", false);
+    }
+}
+
+/*!
  * @brief Test 3: Synchronous update check with standard GitHub URL
  *
  * Performs a real network call to GitHub API for nlohmann/json
@@ -261,6 +282,7 @@ int main() {
     std::cout << "--- Unit Tests ---\n";
     test_semver_parsing();
     test_semver_comparison();
+    test_proxy_parsing();
 
     std::cout << "\n--- Integration Tests (requires network) ---\n";
     test_sync_update_check_standard_url();

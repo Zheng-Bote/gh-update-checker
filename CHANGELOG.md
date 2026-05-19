@@ -55,6 +55,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2026-05-19
+### Added
+- Added optional proxy support with authentication (`user:password@host:port`).
+- Robust proxy parsing handles special characters in passwords (e.g., `:` and `@`) using greedy regex matching.
+- Updated `check_github_update`, `check_github_update_async`, and `http_get` to accept an optional proxy configuration.
+- Added comprehensive unit tests for proxy parsing logic.
+- Updated example CLI to support a third optional command-line argument for proxy configuration.
+
 ## [1.1.1] - 2026-05-16
 ### Fixed
 - Fixed corrupted GitHub URL normalization logic where markdown-style artifacts (e.g., `[github](...)`) were present in the regex and string literals.

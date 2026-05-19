@@ -1,3 +1,0 @@
-D:/zb_ba/Dev/CXX/gh-update-checker/test_package/build/msvc-194-x86_64-23-release/CMakeFiles/gh-update-checker-test.dir
-D:/zb_ba/Dev/CXX/gh-update-checker/test_package/build/msvc-194-x86_64-23-release/CMakeFiles/ALL_BUILD.dir
-D:/zb_ba/Dev/CXX/gh-update-checker/test_package/build/msvc-194-x86_64-23-release/CMakeFiles/ZERO_CHECK.dir

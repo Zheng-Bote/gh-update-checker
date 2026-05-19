@@ -4,7 +4,7 @@ from conan.tools.cmake import CMake, CMakeDeps, CMakeToolchain, cmake_layout
 
 class GhUpdateCheckerConan(ConanFile):
     name = "gh-update-checker"
-    version = "1.1.1"
+    version = "1.2.0"
     package_type = "header-library"
     license = "LGPL-3.0"
     author = "ZHENG Robert <robert@hase-zheng.net>"

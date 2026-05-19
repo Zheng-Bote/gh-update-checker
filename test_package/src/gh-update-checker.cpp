@@ -12,18 +12,24 @@
 
 int main(int argc, char** argv) {
     if (argc < 3) {
-        std::println("Usage: gh-update-checker <repo-url|api-url> <local-version>");
+        std::println("Usage: gh-update-checker <repo-url|api-url> <local-version> [proxy]");
         std::println("Example:");
-        std::println("  gh-update-checker [github.com](https://github.com/zheng-bote/gh-update-checker) v1.0.8\n");
+        std::println("  gh-update-checker [github.com](https://github.com/zheng-bote/gh-update-checker) v1.0.8");
+        std::println("  gh-update-checker [github.com](https://github.com/zheng-bote/gh-update-checker) v1.0.8 user:pass@proxy:8080\n");
         std::println("Note: You may pass a normal GitHub URL or a GitHub API URL.");
         std::exit(0);
     }
 
     std::string_view repoUrl{argv[1]};
     std::string_view localVersion{argv[2]};
+    std::optional<std::string_view> proxy;
+
+    if (argc >= 4) {
+        proxy = argv[3];
+    }
 
     try {
-        const auto info = ghupdate::check_github_update(repoUrl, localVersion);
+        const auto info = ghupdate::check_github_update(repoUrl, localVersion, proxy);
 
         std::println("Local version:   {}", localVersion);
         std::println("Remote version:  {}", info.latestVersion);
