@@ -4,7 +4,7 @@ from conan.tools.cmake import CMake, CMakeDeps, CMakeToolchain, cmake_layout
 
 class GhUpdateCheckerConan(ConanFile):
     name = "gh-update-checker"
-    version = "1.2.0"
+    version = "2.0.0"
     package_type = "header-library"
     license = "LGPL-3.0"
     author = "ZHENG Robert <robert@hase-zheng.net>"
@@ -25,11 +25,11 @@ class GhUpdateCheckerConan(ConanFile):
 
     requires = (
         "nlohmann_json/[>=3.12.0 <4]",
-        "cpp-httplib/[>=0.39.0 <1]",
+        "libcurl/[>=8.0.0 <9]",
     )
 
     default_options = {
-        "cpp-httplib/*:with_openssl": True,
+        "libcurl/*:with_ssl": "openssl",
     }
 
     generators = ()

@@ -58,7 +58,7 @@
     - [Build Issues](#build-issues)
       - [CMake not found](#cmake-not-found)
       - [C++23 not supported](#c23-not-supported)
-      - [cpp-httplib or nlohmann/json not found](#cpp-httplib-or-nlohmannjson-not-found)
+      - [libcurl or nlohmann/json not found](#libcurl-or-nlohmannjson-not-found)
     - [Runtime Issues](#runtime-issues)
       - [Network timeouts](#network-timeouts)
       - [Invalid version format](#invalid-version-format)
@@ -91,7 +91,7 @@
 - GitHub URL normalization (converts standard GitHub URLs to API endpoints)
 - Semantic versioning parsing and comparison
 - JSON response parsing via `nlohmann/json`
-- HTTP requests via `cpp-httplib`
+- HTTP requests via `libcurl`
 - Both synchronous and asynchronous update checking
 
 Perfect for:
@@ -141,7 +141,7 @@ Perfect for:
 ### Runtime Requirements
 
 - Network connectivity for GitHub API calls
-- HTTPS support via `cpp-httplib` (OpenSSL backend)
+- HTTPS support via `libcurl`
 
 ## Installation
 
@@ -517,7 +517,7 @@ try {
 ## Performance Considerations
 
 - **String Views**: Minimize copies with `std::string_view` parameters
-- **Network Timeouts**: `cpp-httplib` connection/read/write timeouts are configured in `http_get()`
+- **Network Timeouts**: `libcurl` connection/read/write timeouts are configured in `http_get()`
 - **Async Operations**: Use `check_github_update_async()` for non-blocking calls
 - **Memory**: Asynchronous checks use `std::async` which spawns lightweight threads on most systems
 
@@ -541,7 +541,7 @@ Ensure your compiler is updated:
 - G++: 14 or later
 - Clang: 17 or later
 
-#### cpp-httplib or nlohmann/json not found
+#### libcurl or nlohmann/json not found
 
 Install dependencies with Conan before configuring CMake:
 
@@ -577,12 +577,12 @@ GitHub API has rate limits. For authenticated requests, set an OAuth token:
 ### External (Conan-managed)
 
 - **nlohmann/json** v3.11.3 - JSON parsing
-- **cpp-httplib** v0.39.0 - HTTP requests
+- **libcurl** - HTTP requests
 
 ### System
 
 - Standard C++ Library (C++23)
-- System SSL/TLS runtime libraries as required by `cpp-httplib` OpenSSL support
+- System SSL/TLS runtime libraries as required by `libcurl`
 
 ## Examples and Recipes
 

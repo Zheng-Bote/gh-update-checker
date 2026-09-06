@@ -11,34 +11,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**
 
+- [[2.0.0] - 2026-09-06](#200---2026-09-06)
+  - [Changed](#changed)
 - [[1.2.0] - 2026-05-19](#120---2026-05-19)
   - [Added](#added)
 - [[1.1.1] - 2026-05-16](#111---2026-05-16)
   - [Fixed](#fixed)
 - [[1.1.0] - 2026-05-16](#110---2026-05-16)
   - [Added](#added-1)
-  - [Changed](#changed)
+  - [Changed](#changed-1)
   - [Fixed](#fixed-1)
 - [[1.0.9] - 2026-04-25](#109---2026-04-25)
-  - [Changed](#changed-1)
-- [[1.0.8] - 2026-04-06](#108---2026-04-06)
   - [Changed](#changed-2)
+- [[1.0.8] - 2026-04-06](#108---2026-04-06)
+  - [Changed](#changed-3)
   - [Fixed](#fixed-2)
 - [[1.0.7] - 2026-04-06](#107---2026-04-06)
   - [Added](#added-2)
-  - [Changed](#changed-3)
+  - [Changed](#changed-4)
   - [Fixed](#fixed-3)
 - [[1.0.4] - 2026-02-09](#104---2026-02-09)
   - [Fixed](#fixed-4)
-  - [Changed](#changed-4)
+  - [Changed](#changed-5)
   - [Added](#added-3)
 - [[1.0.5] - 2026-02-09](#105---2026-02-09)
   - [Fixed](#fixed-5)
-  - [Changed](#changed-5)
+  - [Changed](#changed-6)
   - [Added](#added-4)
 - [[1.0.1] - 2026-02-10](#101---2026-02-10)
   - [Fixed](#fixed-6)
-  - [Changed](#changed-6)
+  - [Changed](#changed-7)
   - [Added](#added-5)
 - [[1.0.0] - 2026-02-09](#100---2026-02-09)
   - [Added](#added-6)
@@ -54,6 +56,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - [Format Guide](#format-guide)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+---
+
+## [2.0.0] - 2026-09-06
+
+### Changed
+- **BREAKING CHANGE**: Replaced `cpp-httplib` with `libcurl` for HTTP requests to improve robustness and maintainability.
+- Switched CMake dependency resolution to `find_package(CURL REQUIRED)` and Conan package requirement to `libcurl/[>=8.0.0 <9]`.
+- Implemented RAII patterns (`std::unique_ptr` with custom deleters) for safe resource management of cURL handles and header lists, preventing memory leaks on exceptions.
+- Implemented thread-safe one-time initialization of `libcurl` via `std::call_once`.
+- Added support for detailed cURL error messages using `CURLOPT_ERRORBUFFER`.
 
 ---
 

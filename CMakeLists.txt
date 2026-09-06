@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.31)
 
 project(gh_update_checker
-        VERSION 1.2.0
+        VERSION 2.0.0
         DESCRIPTION "Header-only C++23 library to check GitHub release updates"
         HOMEPAGE_URL "https://github.com/Zheng-Bote/gh-update-checker"
         LANGUAGES CXX)
@@ -17,7 +17,7 @@ include(CMakePackageConfigHelpers)
 # Dependencies (resolved via Conan CMakeDeps or system packages)
 # ---------------------------------------------------------
 find_package(nlohmann_json REQUIRED)
-find_package(httplib REQUIRED)
+find_package(CURL REQUIRED)
 
 # ---------------------------------------------------------
 # Header-only library
@@ -38,7 +38,7 @@ target_sources(gh_update_checker INTERFACE
 
 # IMPORTANT: do NOT link external targets here
 target_link_libraries(gh_update_checker INTERFACE
-    httplib::httplib
+    CURL::libcurl
 )
 
 # ---------------------------------------------------------
